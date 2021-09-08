@@ -30,7 +30,9 @@ Updates:
 <br />
 
 ### September 2, 2021 (Day 4)
-* Read the readings.
+
+Updates:
+* Read the papers/slides.
 * Did a demo with the MatLab GUI following the instructions on Data FlowChart PPT.
 * Cloned Git Repos for simple_mask onto local desktop.
 * Met with group members in group meeting. 
@@ -38,6 +40,7 @@ Updates:
 <br />
 
 ### September 3, 2021 (Day 5)
+Updates:
 * Met with group members in software development meeting.
 * Was able to have simple_mask program running with the help of quick fixes. 
 * Reference: 
@@ -57,12 +60,12 @@ Updates:
 <br />
 
 ### September 7, 2021 (Day 6)
-
+Updates:
 * Completed some forms from Orientation. Finished pre-Internship survey.
 * Attended meeting with QZ, Miaoqi, Faisal to discuss on this week's assignment. 
-* Was able to read .bin file with xpcs program.
+* QZ uploaded data files from detectors, Rigaku and Lambda to Box. Files are pretty large so I will nto be 
+* Was able to read .bin file with xpcs program. 
 * Need to find out how to plot this image properly on Python, similar to how it is done in Matlab GUI.
-
 
 Goals for this week:
 * Understand modules in program
@@ -70,9 +73,11 @@ Goals for this week:
 * Ask questions
 
 ### September 8, 2021 (Day 7)
-
+Updates:
 * Will try my best to give more detailed accounts in this log.
 * Created GitHub and Drive to document progress easily. 
+* Not able to install MatLab because Emory license expired.
+* 
 
 <!-- ## Heading 2
 ### Heading 3

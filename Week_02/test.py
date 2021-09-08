@@ -1,46 +1,24 @@
 import numpy as np
-import scipy as sp
-from scipy.sparse import csr_matrix
-import matplotlib.pyplot as plt
-import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.colors import LogNorm
+from mpl_toolkits.axes_grid1.axes_grid import ImageGrid
 
+x,y = np.ogrid[-4:4:31j,-4:4:31j]
+z = 120000*np.exp(-x**2-y**2)
 
-class RigakuReader():
-    def __init__(self, file):
-        self.file = file
-    
-    def load(self):
-        with open(self.file, 'r') as f:
-            a = np.fromfile(f, dtype=np.uint64)
+fig = plt.figure()
+grid = ImageGrid(fig, 111,  # similar to subplot(141)
+                     nrows_ncols=(2, 1),
+                     axes_pad=0.05,
+                     label_mode='L',
+                     cbar_location='right',
+                     cbar_mode='each'
+                     )
 
-            b = (a >> 5+11)
-            pix_ind = (b & 2**21-1).astype(int)
-            pix_count = (a & 2**12-1).astype(int)
-            pix_frame = (a >> 64-24).astype(int)
-            
-            img = csr_matrix((pix_count, (pix_frame, pix_ind)), shape=(max(pix_frame)+1, 1024*512), dtype='float')
-            
-            
-            img_2D = np.transpose(img.mean(axis=0).reshape(512,1024))
-        return img_2D  
+im0 = grid.axes_all[0].imshow(z)
+im1 = grid.axes_all[1].imshow(z, norm = LogNorm(z.min(), z.max()))
 
+cb0 = grid.cbar_axes[0].colorbar(im0)
+cb1 = grid.cbar_axes[1].colorbar(im1)
 
-
-
-if __name__ == "__main__":
-
-
-    file = 'C:/Users/jeffr/Desktop/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00001/A004_D100_att0_25C_Rq0_00001.bin'
-    reader = RigakuReader(file)
-    
-    img_2D = reader.load()
-    
-    # Notes, img_2D is multidim array. Need to find way to select only certain values that 
-    # fit range we want
-    
-    plt.contourf(img_2D, vmin=0, vmax=6*(10**(-8)))
-
-
-    plt.imshow(img_2D)
-    plt.colorbar()
-    
+plt.show()
