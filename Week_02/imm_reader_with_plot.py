@@ -1,5 +1,7 @@
 import struct
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 class IMMReader8ID():
     def __init__(self, filename:str, no_of_frames:int=-1, skip_frames:int = 0):
@@ -14,9 +16,7 @@ class IMMReader8ID():
 
     def __load__(self):
         with open(self.filename, "rb") as file:
-            
-            print(self.filename)
-            print(self.skip_frames)
+
             if self.skip_frames > 0:
                 self.__skip__(file)
                 
@@ -60,6 +60,7 @@ class IMMReader8ID():
             file.read(payload_size)
 
     def data(self):
+        
         return self.index_data, self.value_data
 
     def __read_imm_header(self, file):
@@ -130,12 +131,50 @@ class IMMReader8ID():
         return imm_header
 
 
+    def plot_frame(self):
+
+        frame = np.zeros(self.cols * self.rows)
+        frame[self.index_data[0]] = self.value_data[0]
+        frame = np.reshape(frame, (self.rows, self.cols))
+
+        fig, ax = plt.subplots()
+        ax.pcolor(frame, norm=colors.LogNorm(vmin=1e-6, vmax=3e-1))
+        
+        plt.imshow(frame)        
+        plt.colorbar()
+
+
+    # average
+    def plot_pixel_sum(self):
+        pixel_sum = np.zeros(self.cols * self.rows)
+        print((pixel_sum))
+        
+        for idx in range(len(self.index_data)):
+            pixel_sum[self.index_data[idx]] += self.value_data[idx]
+        
+        pixel_sum = np.reshape(pixel_sum, (self.rows, self.cols))                                     
+        pixel_avg = pixel_sum/len(self.index_data)
+        
+        
+        print(pixel_avg)
+        # fig, ax = plt.subplots()
+        # ax.pcolor(pixel_sum, norm=colors.LogNorm(vmin=1e-6, vmax=10))
+        
+        # plt.imshow(pixel_sum)        
+        # plt.colorbar()        
+        
+        
+
 
 if __name__ == "__main__":
-    IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
+    # IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
+    
+    IMM_FILE = "C:/Users/jeffr/Desktop/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_00001-01000.imm"
     reader = IMMReader8ID(IMM_FILE)
     reader.__load__()
 
-    print((reader.data()))
+
+    # reader.plot_frame()
+    reader.plot_pixel_sum()
 
 

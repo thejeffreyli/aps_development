@@ -1,7 +1,18 @@
 import struct
 import numpy as np
 
-class IMMReader8ID():
+# from scipy import sparse
+from pyxpcs.structs import PyXPCSArray
+
+class Reader:
+    """
+    Base class for File readers
+    """
+
+    def get_sparse_lil(self):
+        pass
+
+class IMMReader8ID(Reader):
     def __init__(self, filename:str, no_of_frames:int=-1, skip_frames:int = 0):
         self.filename = filename
         self.no_of_frames = no_of_frames
@@ -14,12 +25,9 @@ class IMMReader8ID():
 
     def __load__(self):
         with open(self.filename, "rb") as file:
-            
-            print(self.filename)
-            print(self.skip_frames)
             if self.skip_frames > 0:
                 self.__skip__(file)
-                
+
             header = self.__read_imm_header(file)
             self.rows, self.cols = header['rows'], header['cols']
             self.is_compressed = bool(header['compression'] == 6)
@@ -34,12 +42,10 @@ class IMMReader8ID():
                         values = np.fromfile(file, dtype=np.uint16, count=num_pixels)
                         self.index_data.append(indexes)
                         self.value_data.append(values)
-
                     else:
                         values = np.fromfile(file, dtype=np.uint16, count=num_pixels)
-                        
                         #TODO
- 
+
                     # Check for end of file.
                     if not file.peek(1):
                         break
@@ -129,13 +135,29 @@ class IMMReader8ID():
 
         return imm_header
 
+class RigakuReader(Reader):
+    def __init__(self, file):
+        self.file = file
+    
+    def __load(self):
+        with open(self.file, 'r') as f:
+            a = np.fromfile(f, dtype=np.uint64)
+
+            b = (a >> 5+11)
+            pix_ind = (b & 2**21-1).astype(int)
+            pix_count = (a & 2**12-1).astype(int)
+            pix_frame = (a >> 64-24).astype(int)
+
 
 
 if __name__ == "__main__":
-    IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
+    IMM_FILE = "/home/faisal/Development/xpcs-eigen/data/pyxpcs/A002_MJ_PMA_47g61kDa_att2_160C_Lq0_001_00001-00512.imm"
     reader = IMMReader8ID(IMM_FILE)
-    reader.__load__()
+    reader.load()
 
-    print((reader.data()))
+    from pyxpcs.structs import PyXPCSArray
+    data = reader.array
+    data.sum(1)
 
-
+    pos, indicies, values = data.get_lil()
+    print(indicies[0][:30])

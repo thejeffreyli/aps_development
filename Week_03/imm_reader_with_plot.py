@@ -1,5 +1,7 @@
 import struct
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 class IMMReader8ID():
     def __init__(self, filename:str, no_of_frames:int=-1, skip_frames:int = 0):
@@ -14,9 +16,7 @@ class IMMReader8ID():
 
     def __load__(self):
         with open(self.filename, "rb") as file:
-            
-            print(self.filename)
-            print(self.skip_frames)
+
             if self.skip_frames > 0:
                 self.__skip__(file)
                 
@@ -60,6 +60,7 @@ class IMMReader8ID():
             file.read(payload_size)
 
     def data(self):
+        
         return self.index_data, self.value_data
 
     def __read_imm_header(self, file):
@@ -130,12 +131,55 @@ class IMMReader8ID():
         return imm_header
 
 
+ 
+    # average
+    def calc_avg_pixel(self):
+        pixel_sum = np.zeros(self.cols * self.rows)
+        
+        for idx in range(len(self.index_data)):
+            pixel_sum[self.index_data[idx]] += self.value_data[idx]
+        
+        pixel_sum = np.reshape(pixel_sum, (self.rows, self.cols))                                     
+        pixel_avg = pixel_sum/len(self.index_data)
+
+        return pixel_avg
+        
+    def plot_pix_avg(self, pixel_avg, config):
+        fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+        colormap = plt.cm.jet
+        colormap.set_under(color='w')
+        
+        det_dist = config['detector_distance']
+        ccd_x0 = config['beam_center_x']
+        ccd_y0 = config['beam_center_y']
+        pixel_size = config['pixel_size']
+        x_energy = config['x_energy']
+    
+        pix2q = pixel_size/det_dist*(2*3.1416/(12.4/x_energy))
+        y_min = ((0-ccd_x0)*pix2q).item()
+        y_max = ((pixel_avg.shape[1]-ccd_x0)*pix2q).item()
+        x_min = (0-ccd_y0)*pix2q.item()
+        x_max = (pixel_avg.shape[0]-ccd_y0)*pix2q.item()
+    
+        im = ax.imshow(pixel_avg, 
+                     cmap=colormap, 
+                     norm=colors.LogNorm(vmin=1e-6, vmax=3e-1),
+                     interpolation='none', 
+                     extent=([y_min, y_max, x_min, x_max]))
+        fig.colorbar(im, ax=ax)
+        plt.rc('font', size=20)
+    
+        return ax
 
 if __name__ == "__main__":
     IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
+    
+    # IMM_FILE = "C:/Users/jeffr/Desktop/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_00001-01000.imm"
     reader = IMMReader8ID(IMM_FILE)
     reader.__load__()
+    reader.calc_avg_pixel()
 
-    print((reader.data()))
+    # reader.plot_frame()
+    # reader.plot_pixel_sum()
 
 
