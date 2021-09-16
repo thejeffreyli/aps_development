@@ -62,9 +62,11 @@ Updates:
 ### September 7, 2021 (Day 6)
 Updates:
 * Completed some forms from Orientation. Finished pre-Internship survey on WTDS.
+* Attended Student Connects meeting.
 * Attended meeting with QZ, Miaoqi, Faisal to discuss on this week's assignment. Will be working on data reading functions that we can incorporate on to the Python GUI.
 * QZ uploaded data files from detectors, Rigaku and Lambda to Box. Files are large, so I will not upload on GitHub or Google Drive. 
 * Was able to read .bin file with xpcs program. However, I was not able to plot the image properly using MatplotLib. The goal is to have the plot resemble what is presented using the MatLab GUI.   
+
 
 Goals for this week:
 * Understand modules in program.
@@ -86,7 +88,7 @@ Updates:
 ### September 9, 2021 (Day 8)
 Updates:
 * Worked on running the .imm method, making sure it can accept and read .imm files properly. Moreover, the program outputs two parameters, index and value. Both of these are in the form of lists containing numpy arrays and will be important for the plotting of the XPCS data.
-* The Git repo for the Rigaku code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/imm_reader.py).
+* The Git repo for the .IMM code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/imm_reader.py).
 * QZ showed me a tour of the beamline inside Argonne using his lens software. I thought it was very cool, and it allowed me to understand better on what I am doing and the relevancy of my work. 
 * Attended brief APS Orientation about safety.
 
@@ -116,31 +118,38 @@ Updates:
 * Had difficulties with plotting figures since I was unfamiliar with the sparse technique.
 * Spoke with Faisal and he guided me towards the right direction. I did not need to use the sparse matrix technique, since it would be more computationally intensive and the goal was not to calculate but to only  create a graphical depiction.
 * Made some additions to the .IMM reader. 
-* The Git repo for the Rigaku code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/rigaku_reader.py). The plots can be found on the Google Drive [here]().
+* The Git repo for the .IMM plotter can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/imm_reader_with_plot.py). The plots can be found on the Google Drive [here](https://drive.google.com/drive/folders/1lhwqcgPCY3ucNjv0RSdv9Q6jHWoMHED_?usp=sharing). The familiar circular shape can be seen in these plots. 
 
 <br />
 
 ### September 14, 2021 (Day 11)
 Updates:
-* Had difficulties 
+* Attended Student Connects meeting.
+* Attended meeting with QZ and Miaoqi to discuss on this week's assignments. Need to make some minor adjustments to the plots; rather than plotting a single frame, I should plot the average sum. Moreover, some other things I should incorporate include:
+    1) Function that reads and extracts paramters from .HDF file.
+    2) Function that parses exisiting directory for .IMM/.BIN file.
+    3) Function that calls on appropriate plotting/reader function for either .IMM or .BIN.
+* Talked with QZ about graduate school and his experiences. 
 
 <br />
 
 ### September 15, 2021 (Day 12)
 Updates:
-* Had difficulties 
+* Looked into ways for searching through existing directories. [Source](https://www.geeksforgeeks.org/file-searching-using-python/)
+* Developed program that follows the requirements mentioned yesterday. In short, given a .HDF file, the program is able to extract the necessary parameters for the GUI. Then it can find exisiting .IMM or .BIN files in its directory. Next, it will generate plots of the file using respective reading and plotting methods already developed from Week 2 and 3. 
+* The Git repo for the program can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_03/hdf_extractor.py). The results can be found on the Google Drive [here](https://drive.google.com/drive/folders/1anDBwaMMTmvfzQJtk7o1LA7paIKfZbrd?usp=sharing). 
 
 <br />
 
 ### September 16, 2021 (Day 13)
 Updates:
-* Had difficulties 
+* Started implementing the new program into the existing GUI. 
 
 <br />
 
 ### September 17, 2021 (Day 14)
 Updates:
-* Had difficulties 
+
 
 <!-- ## Heading 2
 ### Heading 3
