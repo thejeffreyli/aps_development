@@ -76,16 +76,18 @@ Goals for this week:
 ### September 8, 2021 (Day 7)
 Updates:
 * I was not able to install MatLab because my Emory license expired. That is ok, because I still have access to remote server. 
-* Talked with QZ on how to properly plot the figures. We played around with scaling of the plot using log10 and lognorm. For log10, the matrix values were all operated with log10. For lognorm, it was more complicated and an explanation can be found on the Matplotlib [document](https://matplotlib.org/stable/tutorials/colors/colormapnorms.html). 
-* I uploaded the program and the plots on Google Drive. The results can be found [here](). Comparing the results, we see that log10 leaves a lot of white space, but this was easily corrected using lognorm scaling. 
+* Talked with QZ on how to properly plot the figures. We played around with scaling of the colormap using log10 and lognorm. For log10, the matrix values were all operated with log10. For lognorm, it was more complicated and an explanation can be found on the Matplotlib [document](https://matplotlib.org/stable/tutorials/colors/colormapnorms.html). 
+* More background on colormap normalization: Objects that use colormaps by default linearly map the colors in the colormap from data values vmin to vmax. Matplotlib does this mapping in two steps, with a normalization from the input data to [0, 1] occurring first, and then mapping onto the indices in the colormap. However, there are sometimes cases where it is useful to map data to colormaps in a non-linear fashion.
+* I uploaded the plots on Google Drive. The results can be found [here](https://drive.google.com/drive/folders/1Lu-8x097JKolMsWuReA4etekUZVenEoY?usp=sharing). Comparing the results, we see that log10 leaves a lot of white space, but this was easily corrected using lognorm scaling. This transformation is useful to display changes across disparate scales. Using colors.LogNorm normalizes the data via log10.
+* The Git repo for the Rigaku code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/rigaku_reader.py).
 
 <br />
 
 ### September 9, 2021 (Day 8)
 Updates:
-* Worked on running the imm method, making sure it can accept and read .imm files properly. 
-* Was able to have the program output index and numnbers. Both of these are lists containing numpy arrays. I uploaded the program and the plots on Google Drive. The results can be found [here]().
-* QZ showed me a tour of the beamline inside Argonne using his lens software. I thought it was very cool. Allowed me to understand a bit better on what I am doing and how my work will be relevant. 
+* Worked on running the .imm method, making sure it can accept and read .imm files properly. Moreover, the program outputs two parameters, index and value. Both of these are in the form of lists containing numpy arrays and will be important for the plotting of the XPCS data.
+* The Git repo for the Rigaku code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/imm_reader.py).
+* QZ showed me a tour of the beamline inside Argonne using his lens software. I thought it was very cool, and it allowed me to understand better on what I am doing and the relevancy of my work. 
 * Attended brief APS Orientation about safety.
 
 <br />
@@ -93,9 +95,13 @@ Updates:
 ### September 10, 2021 (Day 9)
 Updates:
 * Attended software development group meeting. Presented my updates and asked questions regarding upcoming project. 
-* The main question I had is why the outputs for Rigaku and IMM were different. IMM is a lot older technology, collecting one frame per second. The possibiltiy of collecting 0 photons in one frame was very very slim. On the other hand, Rigaku collects 15000 frames per second. The possibility of collecting 0 photos in one frame is a lot higher and more often. Thus, the index is outputted for Rigaku.
-* Worked on developing a function that plots IMM data, given the index data and value data. 
-* Looked into existing Git repos by Faisal to see what was previously done. Was unsure on how to 
+* The main question I had is why the outputs for Rigaku and IMM were different. IMM is a lot older technology, collecting one frame per second. The possibiltiy of collecting 0 photons in one frame was very, very slim. On the other hand, Rigaku collects 15000 frames per second. The possibility of collecting 0 photos in one frame is a lot higher and more frequent. Thus, 'index' is an additional parameter for Rigaku that is not found in IMM's output. 
+* Worked on developing a function that plots .IMM files, given the index data and value data. Looked into existing Git repos by Faisal to see what was previously done. 
+* References: 
+    1) [corr.cpp](https://github.com/pyxpcs/pyxpcs/blob/master/src/libpyxpcs/corr.cpp)
+    2) [viz.py](https://github.com/pyxpcs/pyxpcs/blob/master/src/pyxpcs/viz.py)
+    3) []
+
 
 <br />
 
