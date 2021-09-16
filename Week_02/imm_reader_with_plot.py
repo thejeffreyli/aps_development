@@ -144,25 +144,6 @@ class IMMReader8ID():
         plt.colorbar()
 
 
-    # average
-    def plot_pixel_sum(self):
-        pixel_sum = np.zeros(self.cols * self.rows)
-        print((pixel_sum))
-        
-        for idx in range(len(self.index_data)):
-            pixel_sum[self.index_data[idx]] += self.value_data[idx]
-        
-        pixel_sum = np.reshape(pixel_sum, (self.rows, self.cols))                                     
-        pixel_avg = pixel_sum/len(self.index_data)
-        
-        
-        print(pixel_avg)
-        # fig, ax = plt.subplots()
-        # ax.pcolor(pixel_sum, norm=colors.LogNorm(vmin=1e-6, vmax=10))
-        
-        # plt.imshow(pixel_sum)        
-        # plt.colorbar()        
-        
         
 
 
@@ -174,7 +155,6 @@ if __name__ == "__main__":
     reader.__load__()
 
 
-    # reader.plot_frame()
-    reader.plot_pixel_sum()
+    reader.plot_frame()
 
 

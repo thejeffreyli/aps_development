@@ -100,7 +100,7 @@ Updates:
 * References: 
     1) [corr.cpp](https://github.com/pyxpcs/pyxpcs/blob/master/src/libpyxpcs/corr.cpp)
     2) [viz.py](https://github.com/pyxpcs/pyxpcs/blob/master/src/pyxpcs/viz.py)
-    3) []
+    3) [XPCS Analysis IMM](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/XPCS%20Analysis%20IMM.html)
 
 
 <br />
@@ -111,8 +111,36 @@ Updates:
 
 <br />
 
-### September 10, 2021 (Day 9)
+### September 13, 2021 (Day 10)
 Updates:
+* Had difficulties with plotting figures since I was unfamiliar with the sparse technique.
+* Spoke with Faisal and he guided me towards the right direction. I did not need to use the sparse matrix technique, since it would be more computationally intensive and the goal was not to calculate but to only  create a graphical depiction.
+* Made some additions to the .IMM reader. 
+* The Git repo for the Rigaku code can be found [here](https://github.com/thejeffreyli/suli_fall_2021/blob/main/Week_02/rigaku_reader.py). The plots can be found on the Google Drive [here]().
+
+<br />
+
+### September 14, 2021 (Day 11)
+Updates:
+* Had difficulties 
+
+<br />
+
+### September 15, 2021 (Day 12)
+Updates:
+* Had difficulties 
+
+<br />
+
+### September 16, 2021 (Day 13)
+Updates:
+* Had difficulties 
+
+<br />
+
+### September 17, 2021 (Day 14)
+Updates:
+* Had difficulties 
 
 <!-- ## Heading 2
 ### Heading 3
