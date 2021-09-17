@@ -39,9 +39,12 @@ def file_search_plot(file, config):
                 print("-----------.imm found.-----------")
                 imm_file = root+'/'+str(file)
                 reader = IMMReader8ID(imm_file)
-                # reader.__load__()
-                pixel_avg = reader.calc_avg_pixel()
-                reader.plot_pix_avg(pixel_avg, config)
+                img_2D = reader.calc_avg_pixel()
+                
+                print( len(img_2D. shape)) 
+                return img_2D
+                
+                # reader.plot_pix_avg(pixel_avg, config)
                 
             # seeks .bin file
             elif file.endswith('.bin'):
@@ -49,8 +52,9 @@ def file_search_plot(file, config):
                 bin_file = root+'/'+str(file)                
                 reader = RigakuReader(bin_file)
                 img_2D = reader.load()
-                reader.test_plot(img_2D, config)
-
+                print( len(img_2D. shape))
+                # reader.test_plot(img_2D, config)
+                return img_2D
     return None
 
 if __name__ == "__main__":
@@ -65,6 +69,6 @@ if __name__ == "__main__":
 
 
     config = read_params(HDF5_FILE)
-    file_search_plot(HDF5_FILE, config)
-
+    test = file_search_plot(HDF5_FILE, config)
+    print(test)
     
