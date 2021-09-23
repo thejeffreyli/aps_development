@@ -35,7 +35,7 @@ Updates:
 * Read the papers/slides.
 * Did a demo with the MatLab GUI following the instructions on Data FlowChart PPT.
 * Cloned Git Repos for simple_mask onto local desktop.
-* Met with group members in group meeting. 
+* Met with group members in group safety meeting. 
 
 <br />
 
@@ -143,12 +143,57 @@ Updates:
 
 ### September 16, 2021 (Day 13)
 Updates:
-* Started implementing the new program into the existing GUI. 
+* Started implementing the 'hdf extractor' program into the existing GUI. This would be done as a function inside simple_mask_kernel The main goal for now is to have the plot be properly displayed in the GUI viewer and data be read from the hdf file. 
+* Encountered bugs upon startup of program due to some parameters that seem to be missing. Plots would not load, deduced issue to being that matplotlib is not needed in my function since it is being called elsewhere. 
+* Attended group safety meeting. 
 
 <br />
 
 ### September 17, 2021 (Day 14)
 Updates:
+* Miaoqi clarified the issues I was having yesterday. Firstly, I was encountering bugs, because I was not loading the saxs file properly. The saxs file is required for the plot, because it is what needs to be read by a plotting function. Secondly, both the outputs of the file_search function should be 2D arrays. This is the accepted form for the program. 
+* I overcame the bugs due to Miaoqi's tips. I had to comment out a section of Miaoqi's program that gave formatting errors.
+* The plots came out nicely, and can be found [here](xxx). 
+* Downloaded HDF Viewer for Windows.
+
+<br />
+
+
+## Week 4: 
+
+<br />
+
+
+### September 20, 2021 (Day 15)
+Updates:
+* QZ wanted me to write the parameters/data from the program into a .h5 file. 
+* Read more into what a .h5 file is and how I can write the file using Python.
+* Sources: 
+    1) [HDF5 for Python](https://docs.h5py.org/en/latest/index.html) 
+    2) [HDF5 files in Python](https://www.geeksforgeeks.org/hdf5-files-in-python/)
+* Used HDF viewer to examine content of 'jaeger' h5 file. My goal was to mimic the jaeger file in terms of which parameters/data to have.
+* Noticed most of the parameters/data could not be found (or were not easily found) from Miaoqi's code. Asked QZ if we can talk more about this tomorrow during the meeting.
+
+
+### September 21, 2021 (Day 16)
+Updates:
+* Met with QZ and Miaoqi to discuss updates to the program. We made an excel spreadsheet that explains what each data is and how to find/derive them from the GUI/program.
+* The spreadsheet can be found [here](xxx).
+
+### September 22, 2021 (Day 17)
+Updates:
+* Worked on developing a function capable of extracting the necessary values (calculated and read) from the program. 
+* Finished a majority of them. Could not find /data/Maps/x and /data/Maps/y in maps. /data/dphival and /data/sphival provide data types different than ones shown in 'jaeger.'
+
+### September 23, 2021 (Day 18)
+Updates:
+* Finished developing function. Sample .h5 results can be found [here](xxx).
+* Worked on presentation for tomorrow's meeting. I will be running a trial of the GUI. Prepared questions about graduate school. 
+
+
+### September 24, 2021 (Day 19)
+Updates:
+
 
 
 <!-- ## Heading 2

@@ -75,6 +75,7 @@ class SimpleMask(object):
     def test_func(self, file, mask):
         # print(self.compute_qmap())
         name = os.path.basename(file)
+        name = os.path.splitext(name)[0]
         
         hf = h5py.File(name +'.h5', 'w')
         
@@ -115,10 +116,10 @@ class SimpleMask(object):
         data.create_dataset('ccdz', data=ccdz)
         data.create_dataset('ccdz0', data=ccdz0)
         data.create_dataset('datetime', data=datetime)
-        data.create_dataset('data_name', data=os.path.basename(file))        
+        data.create_dataset('data_name', data=name)        
    
 
-        dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist = self.compute_partition()
+        dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist, dphival, sphival = self.compute_partition()
 
         data.create_dataset('dqval', data=dqval_list)
         data.create_dataset('dynamicMap', data=dqmap_partition)
@@ -126,6 +127,9 @@ class SimpleMask(object):
         data.create_dataset('sqval', data=sqval_list)
         data.create_dataset('staticMap', data=sqmap_partition)
         data.create_dataset('staticQList', data=sqlist)   
+        data.create_dataset('dphival', data=dphival) 
+        data.create_dataset('sphival', data=sphival) 
+        
         
         data.create_dataset('mask', data=mask)   
 
@@ -441,10 +445,15 @@ class SimpleMask(object):
 
         for n in range(dp_num):
             dphi_partition[self.qmap['phi'] >= dphi[n]] = n
-            
+        dphival = np.unique(dphi_partition)
+        
+        # print(np.unique(dphi_partition).sort())    
         for n in range(sp_num):
             sphi_partition[self.qmap['phi'] >= sphi[n]] = n
+        sphival = np.unique(sphi_partition)
 
+
+        # print(sphi_partition)
         dyn_combined = np.zeros_like(dqmap_partition, dtype=np.uint32)
         sta_combined = np.zeros_like(dqmap_partition, dtype=np.uint32)
 
@@ -468,7 +477,7 @@ class SimpleMask(object):
         # self.hdl.setImage(self.data)
         # self.hdl.setCurrentIndex(3)
         
-        return dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist
+        return dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist, dphival, sphival
         
         
         
