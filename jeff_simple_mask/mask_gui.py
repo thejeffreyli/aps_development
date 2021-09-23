@@ -32,7 +32,6 @@ def exception_hook(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception",
                  exc_info=(exc_type, exc_value, exc_traceback))
 
-
 sys.excepthook = exception_hook
 
 
@@ -87,8 +86,11 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         fname = QFileDialog.getOpenFileName(self, 'Open directory')[0]
         # fname = "/Users/mqichu/Documents/local_dev/xpcs_mask/data/H187_D100_att0_Rq0_00001_0001-100000.hdf"
         self.fname.setText(os.path.basename(fname))
-        self.sm.read_data(fname)
-
+        mask = self.sm.read_data(fname)
+        
+        # read in data into .h5 file
+        self.sm.test_func(fname, mask)
+        
         self.db_cenx.setValue(self.sm.center[1])
         self.db_ceny.setValue(self.sm.center[0])
         self.db_energy.setValue(self.sm.energy)

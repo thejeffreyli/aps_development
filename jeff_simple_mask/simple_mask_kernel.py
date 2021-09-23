@@ -17,8 +17,6 @@ from imm_reader_with_plot import IMMReader8ID
 from rigaku_reader import RigakuReader
 
 
-
-
 pg.setConfigOptions(imageAxisOrder='row-major')
 
 
@@ -74,6 +72,64 @@ class SimpleMask(object):
     
     """
 
+    def test_func(self, file, mask):
+        # print(self.compute_qmap())
+        name = os.path.basename(file)
+        
+        hf = h5py.File(name +'.h5', 'w')
+        
+        data = hf.create_group("data")
+        maps = data.create_group("Maps")
+        
+        # string
+        dt = h5py.special_dtype(vlen=str)
+        map1name = maps.create_dataset('map1name', (1,), dtype=dt)
+        map1name[0] = 'q'
+         
+        map2name = maps.create_dataset('map2name', (1,), dtype=dt)
+        map2name[0] = 'phi'        
+        
+        res = self.compute_qmap()
+        maps.create_dataset('phi', data=res['phi'])
+        maps.create_dataset('q', data=res['qr'])
+
+        dt = h5py.vlen_dtype(np.dtype('int32'))
+        version = data.create_dataset('Version', (1,), dtype=dt)
+        version[0] = [5]
+        xspec = data.create_dataset('xspec', (1,), dtype=dt)
+        xspec[0] = [-1]
+        yspec = data.create_dataset('yspec', (1,), dtype=dt)        
+        yspec[0] = [-1]
+        
+        with h5py.File(file, 'r') as f1:
+            
+            # parameters
+            ccdx = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_x')[()])
+            ccdx0 = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_zero_x')[()])
+            ccdz = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_z')[()])
+            ccdz0 = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_zero_z')[()])
+            datetime = np.squeeze(f1.get('/measurement/instrument/source_begin/datetime')[()])
+            
+        data.create_dataset('ccdx', data=ccdx)
+        data.create_dataset('ccdx0', data=ccdx0)
+        data.create_dataset('ccdz', data=ccdz)
+        data.create_dataset('ccdz0', data=ccdz0)
+        data.create_dataset('datetime', data=datetime)
+        data.create_dataset('data_name', data=os.path.basename(file))        
+   
+
+        dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist = self.compute_partition()
+
+        data.create_dataset('dqval', data=dqval_list)
+        data.create_dataset('dynamicMap', data=dqmap_partition)
+        data.create_dataset('dynamicQList', data=dqlist)
+        data.create_dataset('sqval', data=sqval_list)
+        data.create_dataset('staticMap', data=sqmap_partition)
+        data.create_dataset('staticQList', data=sqlist)   
+        
+        data.create_dataset('mask', data=mask)   
+
+        hf.close()
 
     def file_search(self, file):
         # seeks directory of existing hdf program
@@ -104,13 +160,13 @@ class SimpleMask(object):
                     return img_2D
         return None
 
+
     def read_data(self, fname=None):
         
         # saxs = self.file_search(fname)
         with h5py.File(fname, 'r') as f:
             # saxs = f[keymap['saxs_2d']][()] # saxs_2d would be 2d img
             saxs = self.file_search(fname)
-            
             ccd_x0 = np.squeeze(f[keymap['ccd_x0']][()])
             ccd_y0 = np.squeeze(f[keymap['ccd_y0']][()])
             self.energy = np.squeeze(f[keymap['X_energy']][()])
@@ -120,13 +176,12 @@ class SimpleMask(object):
         # keep same
         self.data_raw = np.zeros(shape=(5, *saxs.shape))
         self.mask = np.ones(saxs.shape, dtype=np.bool)
-
+        
         self.center = (ccd_y0, ccd_x0)
         self.shape = self.data_raw.shape
         self.qmap = self.compute_qmap()
-
         self.extent = self.compute_extent()
-
+        
         min_val = np.min(saxs[saxs > 0])
         saxs = np.log10(saxs + min_val) 
         self.data_raw[0] = saxs 
@@ -136,8 +191,9 @@ class SimpleMask(object):
         "NOTE: REMOVED THIS PORTION BECAUSE OF BUG ISSUES -----------------------"
         # self.data_raw[1] = saxs * self.mask 
         self.data_raw[2] = self.mask 
-
-
+    
+        return self.mask
+        
     def compute_qmap(self):
         k0 = 2 * np.pi / self.energy
         v = np.arange(self.shape[1], dtype=np.uint32) - self.center[0]
@@ -160,6 +216,8 @@ class SimpleMask(object):
             'qx': qx.astype(np.float32),
             'qy': qy.astype(np.float32)
         }
+        
+    
         return res
 
     def compute_extent(self):
@@ -342,6 +400,7 @@ class SimpleMask(object):
 
     def compute_partition(self, dq_num=10, sq_num=100, mode='linear',
                           dp_num=36, sp_num=360):
+
         if sq_num % dq_num != 0:
             raise ValueError('sq_num must be multiple of dq_num')
 
@@ -359,42 +418,60 @@ class SimpleMask(object):
             sqlist = np.linspace(qmin, qmax, sq_num + 1)
             dphi = np.linspace(0, np.pi * 2.0, dp_num + 1)
             sphi = np.linspace(0, np.pi * 2.0, sp_num + 1)
-
+            
         dqmap_partition = np.zeros_like(qmap, dtype=np.uint32)
         sqmap_partition = np.zeros_like(qmap, dtype=np.uint32)
 
+        # dqval
+        dqval_list = []
         for n in range(dq_num):
             qval = dqlist[n]
             dqmap_partition[qmap >= qval] = n + 1
+            dqval_list.append(qval)
 
+        # sqval 
+        sqval_list = []
         for n in range(sq_num):
             qval = sqlist[n]
             sqmap_partition[qmap >= qval] = n + 1
+            sqval_list.append(qval)
 
         dphi_partition = np.zeros_like(qmap, dtype=np.uint32)
         sphi_partition = np.zeros_like(qmap, dtype=np.uint32)
 
         for n in range(dp_num):
+            print(dphi_partition[self.qmap['phi'] >= dphi[n]])
             dphi_partition[self.qmap['phi'] >= dphi[n]] = n
-
+            
         for n in range(sp_num):
             sphi_partition[self.qmap['phi'] >= sphi[n]] = n
 
         dyn_combined = np.zeros_like(dqmap_partition, dtype=np.uint32)
         sta_combined = np.zeros_like(dqmap_partition, dtype=np.uint32)
 
+        # dqmap, dqlist
         for n in range(dp_num):
             idx = dphi_partition == n
             dyn_combined[idx] = dqmap_partition[idx] + n * dq_num
+        dqlist =  np.unique(dqmap_partition, axis=1)
+        
 
+        # sqmap, sqlist
         for n in range(sp_num):
             idx = sphi_partition == n
             sta_combined[idx] = sqmap_partition[idx] + n * sq_num
+        sqlist =  np.unique(sqmap_partition, axis=1)
+        
 
-        self.data[3] = dyn_combined * self.mask
-        self.data[4] = sta_combined * self.mask
-        self.hdl.setImage(self.data)
-        self.hdl.setCurrentIndex(3)
+        "NOTE: REMOVED THIS PORTION BECAUSE OF BUG ISSUES -----------------------"
+        # self.data[3] = dyn_combined * self.mask
+        # self.data[4] = sta_combined * self.mask
+        # self.hdl.setImage(self.data)
+        # self.hdl.setCurrentIndex(3)
+        
+        return dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist
+        
+        
         
     def update_parameters(self, val):
         assert(len(val) == 5)
