@@ -440,7 +440,6 @@ class SimpleMask(object):
         sphi_partition = np.zeros_like(qmap, dtype=np.uint32)
 
         for n in range(dp_num):
-            print(dphi_partition[self.qmap['phi'] >= dphi[n]])
             dphi_partition[self.qmap['phi'] >= dphi[n]] = n
             
         for n in range(sp_num):
