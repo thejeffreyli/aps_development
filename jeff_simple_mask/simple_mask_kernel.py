@@ -93,6 +93,10 @@ class SimpleMask(object):
         res = self.compute_qmap()
         maps.create_dataset('phi', data=res['phi'])
         maps.create_dataset('q', data=res['qr'])
+        # maps.create_dataset('y', data=vg)
+        # maps.create_dataset('x', data=hg)
+        
+        
 
         dt = h5py.vlen_dtype(np.dtype('int32'))
         version = data.create_dataset('Version', (1,), dtype=dt)
@@ -153,7 +157,7 @@ class SimpleMask(object):
                     return img_2D
 
                 # seeks .bin file
-                elif file.endswith('.bin'):
+                elif file.endswith('.batchinfo'):
                     print("-----------.bin found.-----------")
                     bin_file = root+'/'+str(file)   
                     print(bin_file)                    
@@ -203,7 +207,7 @@ class SimpleMask(object):
         v = np.arange(self.shape[1], dtype=np.uint32) - self.center[0]
         h = np.arange(self.shape[2], dtype=np.uint32) - self.center[1]
         vg, hg = np.meshgrid(v, h, indexing='ij')
-
+        
         r = np.sqrt(vg * vg + hg * hg) * self.pix_dim
         phi = np.arctan2(vg, hg)
         phi[phi < 0] = phi[phi < 0] + np.pi * 2.0
@@ -233,6 +237,7 @@ class SimpleMask(object):
         # the extent for matplotlib imshow is:
         # self._extent = xmin, xmax, ymin, ymax = extent
         # convert to a tuple of 4 elements;
+        
         return (*x_range, *y_range)
 
     def show_location(self, pos):
@@ -430,14 +435,14 @@ class SimpleMask(object):
         dqval_list = []
         for n in range(dq_num):
             qval = dqlist[n]
-            dqmap_partition[qmap >= qval] = n + 1
+            dqmap_partition[qmap * self.mask >= qval] = n + 1
             dqval_list.append(qval)
 
         # sqval 
         sqval_list = []
         for n in range(sq_num):
             qval = sqlist[n]
-            sqmap_partition[qmap >= qval] = n + 1
+            sqmap_partition[qmap * self.mask >= qval] = n + 1
             sqval_list.append(qval)
 
         dphi_partition = np.zeros_like(qmap, dtype=np.uint32)
