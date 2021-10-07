@@ -178,20 +178,73 @@ Updates:
 ### September 21, 2021 (Day 16)
 Updates:
 * Met with QZ and Miaoqi to discuss updates to the program. We made an excel spreadsheet that explains what each data is and how to find/derive them from the GUI/program.
-* The spreadsheet can be found [here](xxx).
+* The spreadsheet can be found [here](https://drive.google.com/drive/folders/15-8h7e3sxLXSJINYhrL2zwGVaTEEpWEO?usp=sharing).
 
 ### September 22, 2021 (Day 17)
 Updates:
 * Worked on developing a function capable of extracting the necessary values (calculated and read) from the program. 
 * Finished a majority of them. Could not find /data/Maps/x and /data/Maps/y in maps. /data/dphival and /data/sphival provide data types different than ones shown in 'jaeger.'
+* Diagram of algorithm can be found [here](https://drive.google.com/drive/folders/1WV2Y7s7QGoZe7FGNvRFErvPVHWVwP8gT?usp=sharing).
 
 ### September 23, 2021 (Day 18)
 Updates:
-* Finished developing function. Sample .h5 results can be found [here](xxx).
+* Finished developing function. Sample .h5 results can be found [here](https://drive.google.com/drive/folders/1NY722D6_cf_Gtd-iovFPk5sqRFdp9JK7?usp=sharing).
 * Worked on presentation for tomorrow's meeting. I will be running a trial of the GUI. Prepared questions about graduate school. 
 
 
 ### September 24, 2021 (Day 19)
+Updates:
+* Presented updates in meeting.
+* QZ has to test .h5 files on his end. No updates.
+
+<br />
+
+
+## Week 5: 
+
+<br />
+
+### September 27, 2021 (Day 20)
+Updates:
+* QZ has to test .h5 files on his end. No updates.
+
+<br />
+
+### September 28, 2021 (Day 21)
+Updates:
+* Met with QZ and Miaoqi to discuss updates to the program. 
+* QZ experienced errors with my program since the results deviated from what was shown in a JN. He believes error may stem from mask file. 
+* To do: 
+    1) Read mask array from new file titled cluster_result > H432_OH_100_025C_att05_001_0001-1000.hdf.
+    2) Use mask array and generate a new qmap. Give QZ the new qmap.
+    3) Draw a circle using GUI. 
+    4) Generate another qmap using the new mask. 
+* Miaoqi was going to develop new function for readng hdf5 raw data file. Hdf5 file is raw data, not to be confused with hdf file which is meta data. The goal for this would be to read files from yuyin202109.
+
+<br />
+
+### September 29, 2021 (Day 22)
+Updates:
+* Miaoqi sent out new function last night. I incorporated it as a test function, but was unable to read the files from yuyin202109.
+* Miaoqi suggested that the files may be broken.
+* Developed small program for reading the map file from H432_OH_100_025C_att05_001_0001-1000.hdf into qmap. The new qmap (h5) file can be found [here]().
+* Met with Miaoqi on how to read or save the mask file after applying ROI using GUI. Additional things I need to do is programming the save button which would ideally save the mask into the qmap file. 
+* Looked into how to edit .h5 files: 
+    1) [Editing the HDF file](https://quantum-kite.com/category/capabilities/editing-the-hdf-file/)
+    2) [How to use HDF5 files in Python](https://www.pythonforthelab.com/blog/how-to-use-hdf5-files-in-python/)
+
+<br />
+
+### September 30, 2021 (Day 23)
+Updates:
+* Met with Nicholas Schwarz to talk about grad school and career advice. 
+* Performed several tests on how to save the mask. Initially, I was unsure how to read the mask and then perform a separate function for saving. However, my function uses Apply ROI to create a new mask and reads it. THe mask is read. For saving, press 'Save' on the GUI. I wired the command to start a function that saves the mask previously read. 
+* Saving the new mask onto the existing qmap was tricky. The save function searches the directory for an existing .h5 file, which it assumes to be the one we recently written on based on steps from weeks before. Encountered several errors with writing, but a change in 'w' to 'r+' as command resolved them. The function overwrites existing mask file in the qmap and replaces it wih the new mask. 
+* Diagram of algorithm can be found [here](xxx).
+
+<br />
+
+### October 1, 2021 (Day 24)
 Updates:
 
 

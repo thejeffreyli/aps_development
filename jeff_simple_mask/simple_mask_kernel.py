@@ -15,7 +15,7 @@ import os
 # import other programs
 from imm_reader_with_plot import IMMReader8ID
 from rigaku_reader import RigakuReader
-
+from hdf2sax import hdf2saxs
 
 pg.setConfigOptions(imageAxisOrder='row-major')
 
@@ -71,136 +71,252 @@ class SimpleMask(object):
     one input, file name
     
     """
-
-    def test_func(self, file, mask):
-        # print(self.compute_qmap())
-        name = os.path.basename(file)
-        name = os.path.splitext(name)[0]
         
+    # existing .h5 file
+    def return_file_name(self):
+        dir_path = os.getcwd()
+        # print(dir_path)
+        for root, dirs, files in os.walk(dir_path):
+            for file in files: 
+                # seeks .h5 file
+                if file.endswith('.h5'):
+                    h5_file = root+'/'+str(file)
+        return h5_file
+    
+    
+    # create qmap template, preload exisiting metadata
+    def generate_qmap_template(self, file):
+        
+        # name of file
+        name = os.path.splitext(os.path.basename(file))[0]
         hf = h5py.File(name +'.h5', 'w')
         
+        # empty
+        empty_arr = np.array([])
+        
+        # defining directories
         data = hf.create_group("data")
         maps = data.create_group("Maps")
         
-        # string
+        # defining subdirectories
+        
+        # -------------------Maps subdirectory-------------------
         dt = h5py.special_dtype(vlen=str)
+        res = self.compute_qmap()
+        
         map1name = maps.create_dataset('map1name', (1,), dtype=dt)
         map1name[0] = 'q'
-         
+        
         map2name = maps.create_dataset('map2name', (1,), dtype=dt)
         map2name[0] = 'phi'        
         
-        res = self.compute_qmap()
         maps.create_dataset('phi', data=res['phi'])
         maps.create_dataset('q', data=res['qr'])
-        # maps.create_dataset('y', data=vg)
-        # maps.create_dataset('x', data=hg)
+        maps.create_dataset('x', data=empty_arr)
+        maps.create_dataset('y', data=empty_arr)        
         
-        
+        hf.close()
+        print("QMap template successfully generated.")
 
-        dt = h5py.vlen_dtype(np.dtype('int32'))
-        version = data.create_dataset('Version', (1,), dtype=dt)
-        version[0] = [5]
-        xspec = data.create_dataset('xspec', (1,), dtype=dt)
-        xspec[0] = [-1]
-        yspec = data.create_dataset('yspec', (1,), dtype=dt)        
-        yspec[0] = [-1]
-        
+    # preload exisiting metadata
+    def preload_meta(self, file):
+        print("Creating directories...")  
+        # read metadata
         with h5py.File(file, 'r') as f1:
-            
             # parameters
             ccdx = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_x')[()])
             ccdx0 = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_zero_x')[()])
             ccdz = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_z')[()])
             ccdz0 = np.squeeze(f1.get('/measurement/instrument/acquisition/stage_zero_z')[()])
-            datetime = np.squeeze(f1.get('/measurement/instrument/source_begin/datetime')[()])
-            
-        data.create_dataset('ccdx', data=ccdx)
-        data.create_dataset('ccdx0', data=ccdx0)
-        data.create_dataset('ccdz', data=ccdz)
-        data.create_dataset('ccdz0', data=ccdz0)
-        data.create_dataset('datetime', data=datetime)
-        data.create_dataset('data_name', data=name)        
-   
-
-        dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist, dphival, sphival = self.compute_partition()
-
-        data.create_dataset('dqval', data=dqval_list)
-        data.create_dataset('dynamicMap', data=dqmap_partition)
-        data.create_dataset('dynamicQList', data=dqlist)
-        data.create_dataset('sqval', data=sqval_list)
-        data.create_dataset('staticMap', data=sqmap_partition)
-        data.create_dataset('staticQList', data=sqlist)   
-        data.create_dataset('dphival', data=dphival) 
-        data.create_dataset('sphival', data=sphival) 
+            datetime = np.squeeze(f1.get('/measurement/instrument/source_begin/datetime')[()])        
         
+        # write metadata into qmap
+        name = os.path.splitext(os.path.basename(file))[0]
+        with h5py.File(name +'.h5', 'a') as hf:
+        # update data
+            data = hf['data']        
+            data.create_dataset('ccdx', data=ccdx)                      
+            data.create_dataset('ccdx0', data=ccdx0)
+            data.create_dataset('ccdz', data=ccdz)
+            data.create_dataset('ccdz0', data=ccdz0)
+            data.create_dataset('datetime', data=datetime)
+            data.create_dataset('data_name', data=name)   
         
-        data.create_dataset('mask', data=mask)   
-
         hf.close()
+        print("Metadata successfully saved.")
+    
+    def update_compute_partition(self, res):
+        file = self.return_file_name()
 
+        with h5py.File(file, 'a') as hf:
+            # checks if directory exists in h5 
+            e = '/data/dynamicMap' in hf            
+            if e == False:
+                # if no directory exists, not created yet
+                print("Creating directories...")  
+                data = hf['data']     
+                data.create_dataset('dqval', data=res['dqval'])
+                data.create_dataset('dynamicMap', data=res['dynamicMap'])
+                data.create_dataset('dynamicQList', data=res['dynamicQList'])
+                data.create_dataset('sqval', data=res['sqval'])
+                data.create_dataset('staticMap', data=res['staticMap'])
+                data.create_dataset('staticQList', data=res['staticQList'])   
+                data.create_dataset('dphival', data=res['dphival']) 
+                data.create_dataset('sphival', data=res['sphival'])   
+                
+                # directories that remain the same
+                dt = h5py.vlen_dtype(np.dtype('int32'))
+                version = data.create_dataset('Version', (1,), dtype=dt)
+                version[0] = [5]
+                xspec = data.create_dataset('xspec', (1,), dtype=dt)
+                xspec[0] = [-1]
+                yspec = data.create_dataset('yspec', (1,), dtype=dt)        
+                yspec[0] = [-1]  
+            else: 
+                print("Saving directories...")               
+                # if directory exists, directories need to be updated
+                data = hf['data']  
+                data['dqval'][...] = res['dqval']
+                data['dynamicMap'][...] = res['dynamicMap']
+                data['dynamicQList'][...] = res['dynamicQList']                
+                data['sqval'][...] = res['sqval']
+                data['staticMap'][...] = res['staticMap']
+                data['staticQList'][...] = res['staticQList']
+                data['dphival'][...] = res['dphival']                
+                data['sphival'][...] = res['sphival']
+        hf.close()
+        
+        print("Compute partition successfully saved.")
+    
+    # need to include logic for if mask already exists
+    def update_mask(self, mask):
+        file = self.return_file_name()
+        with h5py.File(file, 'a') as hf:
+            # checks if directory exists in h5 
+            e = '/data/mask' in hf  
+            if e == False:
+                # if no directory exists, not created yet
+                print("Creating directory...")  
+                data = hf['data']    
+                data.create_dataset('mask', data=mask)   
+            else: 
+                print("Saving directory...")
+                # if directory exists, it needs to be updated
+                data = hf['data']  
+                data['mask'][...] = mask
+        hf.close()
+        print("Mask successfully saved.")
+    
+    def ver_hdf(self, file):
+        with h5py.File(file, 'r') as hf:
+            if file.endswith('.hdf'):
+                # checks if directory exists in h5 
+                e = '/measurement/instrument/acquisition' in hf 
+                if e == True:
+                    # if no directory exists, not created yet
+                    print("HDF metadata file detected.")  
+                    return True
+                else: 
+                    print("You appeared to have inputted an incorrect or incorrectly formatted hdf metadata file.")
+                    return False
+            else:
+                print("You appeared to have inputted an incorrect or incorrectly formatted hdf metadata file.")
+                return False
+        hf.close()        
+        
+    
     def file_search(self, file):
         # seeks directory of existing hdf program
+        root = os.path.dirname(os.path.abspath(file))
         dir_path = os.path.dirname(os.path.realpath(file))
+        files = [ f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path,f)) ]    
         for root, dirs, files in os.walk(dir_path):
             for file in files: 
                 
+                if file.endswith('.bin'):
+                    print("-----------.bin found.-----------")
+                    bin_file = root+'/'+str(file)   
+                    # print(bin_file)                     
+                    reader = RigakuReader(bin_file)
+                    img_2D = reader.load()
+                    # check if 2d array
+                    # print( len(img_2D. shape)) 
+                    return img_2D                
+
                 # seeks .imm file
-                if file.endswith('.imm'):
+                elif file.endswith('.imm'):
                     print("-----------.imm found.-----------")
                     imm_file = root+'/'+str(file)
-                    print(imm_file)
+                    # print(imm_file)
                     reader = IMMReader8ID(imm_file)
                     img_2D = reader.calc_avg_pixel()
                     # check if 2d array
                     # print( len(img_2D. shape)) 
                     return img_2D
 
-                # seeks .bin file
-                elif file.endswith('.batchinfo'):
-                    print("-----------.bin found.-----------")
-                    bin_file = root+'/'+str(file)   
-                    print(bin_file)                    
-                    reader = RigakuReader(bin_file)
-                    img_2D = reader.load()
-                    # check if 2d array
-                    # print( len(img_2D. shape)) 
-                    return img_2D
+
+                # seeks .h5 file
+                elif file.endswith('.h5'):
+                    print("-----------.h5 found.-----------")
+                    h5_file = root+'/'+str(file)   
+                    # print(h5_file)
+                    with h5py.File(h5_file, 'r') as hf:          
+                        e = '/entry/data/data' in hf 
+                        if e == True:
+                            # correct h5 file, contains raw data
+                            print("h5 raw data file found.") 
+                            y = hdf2saxs(h5_file, num_frames=100)
+                            assert y.ndim == 2
+                            # check if 2d array
+                            # print( len(y. shape)) 
+                            return y                             
+                        else:
+                            print("You appeared to have inputted an incorrect or incorrectly formatted h5 file.")
+                            return None
+                
+        print("No raw data files found.")
         return None
 
-
+    # generate 2d saxs
     def read_data(self, fname=None):
         
-        # saxs = self.file_search(fname)
-        with h5py.File(fname, 'r') as f:
-            # saxs = f[keymap['saxs_2d']][()] # saxs_2d would be 2d img
-            saxs = self.file_search(fname)
-            ccd_x0 = np.squeeze(f[keymap['ccd_x0']][()])
-            ccd_y0 = np.squeeze(f[keymap['ccd_y0']][()])
-            self.energy = np.squeeze(f[keymap['X_energy']][()])
-            self.det_dist = np.squeeze(f[keymap['det_dist']][()])
-            self.pix_dim = np.squeeze(f[keymap['pix_dim']][()])
+        b = self.ver_hdf(fname)
+        if b == True:
+            # saxs = self.file_search(fname)
+            with h5py.File(fname, 'r') as f:
+                # saxs = f[keymap['saxs_2d']][()] # saxs_2d would be 2d img
+                saxs = self.file_search(fname)
+                ccd_x0 = np.squeeze(f[keymap['ccd_x0']][()])
+                ccd_y0 = np.squeeze(f[keymap['ccd_y0']][()])
+                self.energy = np.squeeze(f[keymap['X_energy']][()])
+                self.det_dist = np.squeeze(f[keymap['det_dist']][()])
+                self.pix_dim = np.squeeze(f[keymap['pix_dim']][()])
 
-        # keep same
-        self.data_raw = np.zeros(shape=(5, *saxs.shape))
-        self.mask = np.ones(saxs.shape, dtype=np.bool)
-        
-        self.center = (ccd_y0, ccd_x0)
-        self.shape = self.data_raw.shape
-        self.qmap = self.compute_qmap()
-        self.extent = self.compute_extent()
-        
-        min_val = np.min(saxs[saxs > 0])
-        saxs = np.log10(saxs + min_val) 
-        self.data_raw[0] = saxs 
+            # keep same
+            self.data_raw = np.zeros(shape=(5, *saxs.shape))
+            self.mask = np.ones(saxs.shape, dtype=np.bool)
+            
+            self.center = (ccd_y0, ccd_x0)
+            self.shape = self.data_raw.shape
+            self.qmap = self.compute_qmap()
+            self.extent = self.compute_extent()
+            
+            min_val = np.min(saxs[saxs > 0])
+            saxs = np.log10(saxs + min_val) 
+            self.data_raw[0] = saxs 
 
-        # set the default values
+            # set the default values
+            
+            "NOTE: REMOVED THIS PORTION BECAUSE OF BUG ISSUES -----------------------"
+            # self.data_raw[1] = saxs * self.mask 
+            self.data_raw[2] = self.mask 
         
-        "NOTE: REMOVED THIS PORTION BECAUSE OF BUG ISSUES -----------------------"
-        # self.data_raw[1] = saxs * self.mask 
-        self.data_raw[2] = self.mask 
-    
-        return self.mask
+            # print(self.mask )
+            # return self.mask
+        else:
+            print("Task ended.")      
+        
+
         
     def compute_qmap(self):
         k0 = 2 * np.pi / self.energy
@@ -224,7 +340,6 @@ class SimpleMask(object):
             'qx': qx.astype(np.float32),
             'qy': qy.astype(np.float32)
         }
-        
     
         return res
 
@@ -354,6 +469,10 @@ class SimpleMask(object):
         self.hdl.setImage(self.data)
         self.hdl.setCurrentIndex(2)
 
+        print(len(self.mask))
+        return self.mask 
+
+
     def add_roi(self, num_edges=None, radius=60, color='r', sl_type='Polygon',
                 width=3, sl_mode='exclusive'):
 
@@ -482,7 +601,19 @@ class SimpleMask(object):
         # self.hdl.setImage(self.data)
         # self.hdl.setCurrentIndex(3)
         
-        return dqval_list, sqval_list, dqmap_partition, dqlist, sqmap_partition, sqlist, dphival, sphival
+
+        res = {
+            'dqval': dqval_list,
+            'sqval': sqval_list,
+            'dynamicMap': dqmap_partition,
+            'dynamicQList': dqlist,
+            'staticMap': sqmap_partition,
+            'staticQList': sqlist,
+            'dphival': dphival,
+            'sphival': sphival
+        }        
+        
+        return res
         
         
         

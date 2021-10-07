@@ -14,6 +14,7 @@ import shutil
 import logging
 
 
+
 home_dir = os.path.join(os.path.expanduser('~'), '.simple-mask')
 if not os.path.isdir(home_dir):
     os.mkdir(home_dir)
@@ -41,12 +42,15 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.setupUi(self)
 
         # more setup; buttons
-        self.btn_load.clicked.connect(self.load)
-        self.btn_add_roi.clicked.connect(self.add_roi)
-        self.btn_apply_roi.clicked.connect(self.apply_roi)
+        self.btn_load.clicked.connect(self.load) # <------------------------------load
+        self.btn_add_roi.clicked.connect(self.add_roi) # <------------------------------add roi
+        self.btn_apply_roi.clicked.connect(self.apply_roi) # <------------------------------apply roi
         self.btn_plot.clicked.connect(self.plot)
         self.btn_editlock.clicked.connect(self.editlock)
-        self.btn_compute_qpartition.clicked.connect(self.compute_partition)
+        self.btn_compute_qpartition.clicked.connect(self.compute_partition) #<------------------------------compute partition
+        
+        # need a function for save button -- simple_mask_ui
+        self.pushButton.clicked.connect(self.save_mask) # <------------------------------save mask
 
         self.plot_index.currentIndexChanged.connect(self.mp1.setCurrentIndex)
 
@@ -82,15 +86,16 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.groupBox.repaint()
         self.plot()
 
+    # starting function
     def load(self):
         fname = QFileDialog.getOpenFileName(self, 'Open directory')[0]
         # fname = "/Users/mqichu/Documents/local_dev/xpcs_mask/data/H187_D100_att0_Rq0_00001_0001-100000.hdf"
         self.fname.setText(os.path.basename(fname))
-        mask = self.sm.read_data(fname)
-        
-        # read in data into .h5 file
-        self.sm.test_func(fname, mask)
-        
+
+        # read data file
+        self.sm.read_data(fname)
+
+        # actual plotting
         self.db_cenx.setValue(self.sm.center[1])
         self.db_ceny.setValue(self.sm.center[0])
         self.db_energy.setValue(self.sm.energy)
@@ -99,6 +104,14 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.le_shape.setText(str(self.sm.shape[1:]))
         self.groupBox.repaint()
         self.plot()
+
+        # generate qmap
+        self.sm.generate_qmap_template(fname)
+        self.sm.preload_meta(fname)
+        
+        # self.sm.test_func(fname, mask)        
+        # self.write_qmap(fname)
+
 
     def plot(self):
         kwargs = {
@@ -127,6 +140,7 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.sm.apply_roi()
         self.plot_index.setCurrentIndex(2)
         return 
+
     
     def compute_partition(self):
         kwargs = {
@@ -135,8 +149,18 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
             'sp_num': self.sb_spnum.value(),
             'dp_num': self.sb_dpnum.value(),
         }
-        self.sm.compute_partition(**kwargs)
+        res = self.sm.compute_partition(**kwargs)
+        self.sm.update_compute_partition(res)
         self.plot_index.setCurrentIndex(3)
+
+
+    # save button 
+    def save_mask(self):
+        mask = self.sm.apply_roi()
+        self.sm.update_mask(mask)
+    
+    # def preload_blemish(self):
+        
 
 
 def run():
