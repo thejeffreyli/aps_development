@@ -417,6 +417,9 @@ class Ui_MainWindow(object):
         self.btn_apply_roi.setText(_translate("MainWindow", "apply roi"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Partition"))
         self.btn_compute_qpartition.setText(_translate("MainWindow", "compute"))
+        
+        
+        
         self.pushButton.setText(_translate("MainWindow", "save"))
         self.label_10.setText(_translate("MainWindow", "dynamic q partition:"))
         self.label.setText(_translate("MainWindow", "static q partition:"))

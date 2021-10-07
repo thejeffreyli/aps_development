@@ -159,8 +159,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         mask = self.sm.apply_roi()
         self.sm.update_mask(mask)
     
-    # def preload_blemish(self):
-        
+    def preload_blemish(self):
+        file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
 
 
 def run():
