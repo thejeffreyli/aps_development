@@ -13,6 +13,7 @@ import json
 import shutil
 import logging
 
+import h5py
 
 
 home_dir = os.path.join(os.path.expanduser('~'), '.simple-mask')
@@ -38,7 +39,12 @@ sys.excepthook = exception_hook
 
 class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
     def __init__(self, path=None):
+        
+
         super(SimpleMaskGUI, self).__init__()
+        
+        
+        
         self.setupUi(self)
 
         # more setup; buttons
@@ -53,12 +59,19 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.pushButton.clicked.connect(self.save_mask) # <------------------------------save mask
 
         self.plot_index.currentIndexChanged.connect(self.mp1.setCurrentIndex)
+        
 
         # simple mask kernel
         self.sm = SimpleMask(self.mp1, self.infobar)
         self.mp1.sigTimeChanged.connect(self.update_index)
 
         self.state = 'lock'
+
+        # ------------
+        blemish = self.preload_blemish()
+        self.sm.test_plot(blemish)     # <-----------------------------------------------------------------------   
+
+
         self.show()
 
     def update_index(self):
@@ -95,7 +108,7 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         # read data file
         self.sm.read_data(fname)
 
-        # actual plotting
+        # actual plotting <--------------------------------------------------------------
         self.db_cenx.setValue(self.sm.center[1])
         self.db_ceny.setValue(self.sm.center[0])
         self.db_energy.setValue(self.sm.energy)
@@ -103,7 +116,7 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.db_det_dist.setValue(self.sm.det_dist)
         self.le_shape.setText(str(self.sm.shape[1:]))
         self.groupBox.repaint()
-        self.plot()
+        self.plot() #<---------------------------------------------------------------------
 
         # generate qmap
         self.sm.generate_qmap_template(fname)
@@ -121,8 +134,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
             'rotate': self.plot_rotate.isChecked(),
             'plot_center': self.plot_center.isChecked(),
         }
-        self.sm.show_saxs(**kwargs)
-        self.plot_index.setCurrentIndex(0)
+        self.sm.show_saxs(**kwargs) #<---------------------------------------------------
+        # self.plot_index.setCurrentIndex(0)
 
     def add_roi(self):
         color = ('g', 'y', 'b', 'r', 'c', 'm', 'k', 'w')[
@@ -138,7 +151,7 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
 
     def apply_roi(self):
         self.sm.apply_roi()
-        self.plot_index.setCurrentIndex(2)
+        # self.plot_index.setCurrentIndex(2)
         return 
 
     
@@ -150,19 +163,42 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
             'dp_num': self.sb_dpnum.value(),
         }
         res = self.sm.compute_partition(**kwargs)
+        dmap = res['dynamicMap'] #<------------------------------------------------dmap
         self.sm.update_compute_partition(res)
-        self.plot_index.setCurrentIndex(3)
-
+        
+        blemish = self.preload_blemish()
+        res = np.logical_xor(dmap, blemish)    #<------------------------------------------------operation
+        
+        # self.plot_index.setCurrentIndex(3)
+        self.sm.test_plot(res)   
 
     # save button 
     def save_mask(self):
         mask = self.sm.apply_roi()
         self.sm.update_mask(mask)
     
+    
+    
     def preload_blemish(self):
-        file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
-
-
+        # file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
+        # self.sm.show_saxs(file)
+        # self.plot_index.setCurrentIndex(0)
+        print("Test")
+        file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Blemish_Th5p5keV.h5'
+        with h5py.File(file, 'r') as hf:
+            blemish = np.squeeze(hf.get('/lambda_pre_mask')[()])  
+            blemish = np.rot90(blemish, 3)
+            blemish = np.flip(blemish, 1)
+            # print(test)
+            # test = test.flatten()
+    
+            # fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+            # im = ax.imshow(test, cmap='jet')
+            
+            # plt.imshow(test, cmap='jet')
+            
+            return blemish        
+            
 def run():
     # if os.name == 'nt':
     #     setup_windows_icon()
@@ -170,7 +206,7 @@ def run():
     app = QtWidgets.QApplication(sys.argv)
     window = SimpleMaskGUI()
     app.exec_()
-
+    # print("test")
 
 if __name__ == '__main__':
     run()

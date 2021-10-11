@@ -55,9 +55,13 @@ class Ui_MainWindow(object):
         self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 2, 0, 1, 1)
+        
+        
         self.btn_editlock = QtWidgets.QPushButton(self.groupBox)
         self.btn_editlock.setObjectName("btn_editlock")
         self.gridLayout_2.addWidget(self.btn_editlock, 1, 2, 1, 1)
+        
+        
         self.label_5 = QtWidgets.QLabel(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -125,9 +129,14 @@ class Ui_MainWindow(object):
         self.le_shape.setSizePolicy(sizePolicy)
         self.le_shape.setObjectName("le_shape")
         self.gridLayout_2.addWidget(self.le_shape, 7, 2, 1, 1)
+        
+        
         self.btn_load = QtWidgets.QPushButton(self.groupBox)
         self.btn_load.setObjectName("btn_load")
         self.gridLayout_2.addWidget(self.btn_load, 1, 0, 1, 1)
+        
+        
+        
         self.fname = QtWidgets.QLineEdit(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -362,6 +371,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.pushButton, self.plot_index)
         MainWindow.setTabOrder(self.plot_index, self.infobar)
         MainWindow.setTabOrder(self.infobar, self.fname)
+        
         MainWindow.setTabOrder(self.fname, self.btn_load)
         MainWindow.setTabOrder(self.btn_load, self.btn_editlock)
 

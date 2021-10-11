@@ -386,6 +386,12 @@ class SimpleMask(object):
 
         return None
 
+    def test_plot(self, file):
+        # print("test")
+        self.hdl.setImage(file)
+        # self.hdl.adjust_viewbox()
+        self.hdl.set_colormap(cmap='jet')
+
     def show_saxs(self, cmap='jet', log=True, invert=False, rotate=False,
                   plot_center=True, plot_index=0, **kwargs):
         # self.hdl.reset_limits()
@@ -405,7 +411,7 @@ class SimpleMask(object):
             temp = np.max(self.data[0]) - self.data[0]
             self.data[0] = temp
 
-        self.hdl.setImage(self.data)
+        self.hdl.setImage(self.data) #<----------------------------------------------
         self.hdl.adjust_viewbox()
         self.hdl.set_colormap(cmap)
 
@@ -469,7 +475,7 @@ class SimpleMask(object):
         self.hdl.setImage(self.data)
         self.hdl.setCurrentIndex(2)
 
-        print(len(self.mask))
+        # print(len(self.mask))
         return self.mask 
 
 
@@ -612,6 +618,8 @@ class SimpleMask(object):
             'dphival': dphival,
             'sphival': sphival
         }        
+        
+        print("here")
         
         return res
         
