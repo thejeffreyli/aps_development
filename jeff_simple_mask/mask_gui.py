@@ -164,19 +164,36 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         }
         res = self.sm.compute_partition(**kwargs)
         dmap = res['dynamicMap'] #<------------------------------------------------dmap
+        smap = res['staticMap'] #<------------------------------------------------smap
+        
+        # load and apply blemish
+        blemish = self.preload_blemish() 
+        
+        new_dmap = np.multiply(dmap, blemish)    #<------------------------------------------------operation
+        new_dmap = new_dmap.astype(int)
+        res['dynamicMap'] = new_dmap
+        
+        # print(new_dmap)
+        
+        new_smap = np.multiply(smap, blemish)    #<------------------------------------------------operation
+        new_smap = new_smap.astype(int)
+        res['staticMap'] = new_smap
+
+        # print(new_smap)
+
+        # plotting new map
+        new_map = new_smap * new_dmap
+
+  
+        self.sm.test_plot(new_map)
+        self.plot_index.setCurrentIndex(3) #<----?
+        
         self.sm.update_compute_partition(res)
-        
-        blemish = self.preload_blemish()
-        res = np.logical_xor(dmap, blemish)    #<------------------------------------------------operation
-        
-        # self.plot_index.setCurrentIndex(3)
-        self.sm.test_plot(res)   
 
     # save button 
     def save_mask(self):
         mask = self.sm.apply_roi()
         self.sm.update_mask(mask)
-    
     
     
     def preload_blemish(self):
