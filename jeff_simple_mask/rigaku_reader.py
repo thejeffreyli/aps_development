@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # file = 'C:/Users/jeffr/Desktop/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00002/A004_D100_att0_25C_Rq0_00002.bin'
     # file = 'C:/Users/jeffr/Desktop/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00003/A004_D100_att0_25C_Rq0_00003.bin'
     # file = 'C:/Users/jeffr/Desktop/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00004/A004_D100_att0_25C_Rq0_00004.bin'
-    file = 'C:/Users/jeffr/Desktop/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00005/A004_D100_att0_25C_Rq0_00005.bin'
+    file = 'C:/Users/jeffr/Desktop/data/sheyfer202106/sheyfer202106/A004_D100_att0_25C_Rq0_00005/A004_D100_att0_25C_Rq0_00005.bin'
 
     
     

@@ -172,10 +172,10 @@ class IMMReader8ID():
         return ax
 
 if __name__ == "__main__":
-    IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
+    # IMM_FILE = "C:/Users/jeffr/Desktop/comm202106/comm202106/E004_100nm_Lq0_000C_att00_001/E004_100nm_Lq0_000C_att00_001_00001-02000.imm"
     
-    # IMM_FILE = "C:/Users/jeffr/Desktop/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_00001-01000.imm"
-    reader = IMMReader8ID(IMM_FILE)
+    IMM_FILE = "/Users/jeffr/Desktop/data/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_00001-01000.imm"
+    # reader = IMMReader8ID(IMM_FILE)
     reader.__load__()
     reader.calc_avg_pixel()
 

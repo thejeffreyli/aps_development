@@ -68,7 +68,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.state = 'lock'
 
         # ------------
-        blemish = self.preload_blemish()
+        # blemish = self.preload_blemish()
+        blemish = self.preload_triangle()        
         self.sm.test_plot(blemish)     # <-----------------------------------------------------------------------   
 
 
@@ -167,7 +168,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         smap = res['staticMap'] #<------------------------------------------------smap
         
         # load and apply blemish
-        blemish = self.preload_blemish() 
+        # blemish = self.preload_blemish() 
+        blemish = self.preload_triangle()
         
         new_dmap = np.multiply(dmap, blemish)    #<------------------------------------------------operation
         new_dmap = new_dmap.astype(int)
@@ -206,15 +208,25 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
             blemish = np.squeeze(hf.get('/lambda_pre_mask')[()])  
             blemish = np.rot90(blemish, 3)
             blemish = np.flip(blemish, 1)
-            # print(test)
-            # test = test.flatten()
-    
-            # fig, ax = plt.subplots(1, 1, figsize=(15, 10))
-            # im = ax.imshow(test, cmap='jet')
+
             
-            # plt.imshow(test, cmap='jet')
-            
-            return blemish        
+            return blemish    
+
+    def preload_triangle(self):
+        # file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
+        # self.sm.show_saxs(file)
+        # self.plot_index.setCurrentIndex(0)
+        print("Test")
+        file = '/Users/jeffr\Desktop/data/triangle_mask/mask_lambda_test.h5'
+        with h5py.File(file, 'r') as hf:
+            triangle = np.squeeze(hf.get('/mask_triangular')[()])  
+            # test = np.rot90(test, 3)
+            # test = np.flip(test, 1)
+            triangle = np.flip(triangle, 1)
+            triangle = np.rot90(triangle, 3)  
+
+            return triangle           
+        
             
 def run():
     # if os.name == 'nt':
