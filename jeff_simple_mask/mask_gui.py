@@ -43,8 +43,6 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
 
         super(SimpleMaskGUI, self).__init__()
         
-        
-        
         self.setupUi(self)
 
         # more setup; buttons
@@ -57,6 +55,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         
         # need a function for save button -- simple_mask_ui
         self.pushButton.clicked.connect(self.save_mask) # <------------------------------save mask
+        # self.test_button.clicked.connect(self.test)
+
 
         self.plot_index.currentIndexChanged.connect(self.mp1.setCurrentIndex)
         
@@ -68,9 +68,10 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.state = 'lock'
 
         # ------------
-        # blemish = self.preload_blemish()
-        blemish = self.preload_triangle()        
-        self.sm.test_plot(blemish)     # <-----------------------------------------------------------------------   
+        
+        # first we see the blemish when the program is started up
+        blemish = self.preload_blemish()  
+        self.sm.test_plot(blemish)     # <-----------------------------------------------------------------------   PLOT
 
 
         self.show()
@@ -138,96 +139,139 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.sm.show_saxs(**kwargs) #<---------------------------------------------------
         # self.plot_index.setCurrentIndex(0)
 
+    # def add_roi(self):
+    #     color = ('g', 'y', 'b', 'r', 'c', 'm', 'k', 'w')[
+    #             self.cb_selector_color.currentIndex()]
+    #     kwargs = {
+    #         'color': color,
+    #         'sl_type': self.cb_selector_type.currentText(),
+    #         'sl_mode': self.cb_selector_mode.currentText(),
+    #         'width': self.plot_width.value()
+    #     }
+    #     self.sm.add_roi(**kwargs)
+    #     return
+
+    # def apply_roi(self):
+    #     self.sm.apply_roi()
+    #     # self.plot_index.setCurrentIndex(2)
+    #     return 
+
+
+
+    # predetermined mask
+
     def add_roi(self):
-        color = ('g', 'y', 'b', 'r', 'c', 'm', 'k', 'w')[
-                self.cb_selector_color.currentIndex()]
-        kwargs = {
-            'color': color,
-            'sl_type': self.cb_selector_type.currentText(),
-            'sl_mode': self.cb_selector_mode.currentText(),
-            'width': self.plot_width.value()
-        }
-        self.sm.add_roi(**kwargs)
-        return
-
-    def apply_roi(self):
-        self.sm.apply_roi()
-        # self.plot_index.setCurrentIndex(2)
-        return 
-
+        print("PASS 2")
+        triangle = self.preload_triangle()  
+        self.sm.test_plot(triangle)
+        
+        return triangle     
+        
     
+    def apply_roi(self):
+        
+        blemish = self.preload_blemish() 
+        triangle = self.preload_triangle()  
+        
+        mask = blemish * triangle # overall mask
+        # self.test_output("test", mask)
+        self.sm.test_plot(mask)
+        
+        return mask
+
     def compute_partition(self):
+        
+        mask = self.apply_roi()
+        # self.test_output("test", mask)
+        
+        print(self.sb_sqnum)
+        
         kwargs = {
             'sq_num': self.sb_sqnum.value(),
             'dq_num': self.sb_dqnum.value(),
             'sp_num': self.sb_spnum.value(),
             'dp_num': self.sb_dpnum.value(),
         }
-        res = self.sm.compute_partition(**kwargs)
+        res = self.sm.compute_partition(mask, **kwargs)
+                
         dmap = res['dynamicMap'] #<------------------------------------------------dmap
         smap = res['staticMap'] #<------------------------------------------------smap
         
-        # load and apply blemish
-        # blemish = self.preload_blemish() 
-        blemish = self.preload_triangle()
-        
-        new_dmap = np.multiply(dmap, blemish)    #<------------------------------------------------operation
-        new_dmap = new_dmap.astype(int)
-        res['dynamicMap'] = new_dmap
-        
-        # print(new_dmap)
-        
-        new_smap = np.multiply(smap, blemish)    #<------------------------------------------------operation
-        new_smap = new_smap.astype(int)
-        res['staticMap'] = new_smap
+        # self.test_output("test", dmap)
 
-        # print(new_smap)
+        
+        # dmap = np.multiply(dmap, mask)    #<------------------------------------------------operation
+        # dmap = dmap.astype(int)
+        # res['dynamicMap'] = dmap
+
+        # smap = np.multiply(smap, mask)    #<------------------------------------------------operation
+        # smap = smap.astype(int)
+        # res['staticMap'] = smap
 
         # plotting new map
-        new_map = new_smap * new_dmap
-
-  
-        self.sm.test_plot(new_map)
-        self.plot_index.setCurrentIndex(3) #<----?
+        new_map = smap * dmap 
+        # self.sm.test_plot(new_map)
         
+        self.plot_index.setCurrentIndex(3) #<----?
         self.sm.update_compute_partition(res)
 
     # save button 
     def save_mask(self):
-        mask = self.sm.apply_roi()
+        # mask = self.sm.apply_roi()
+        # self.test_output("test", mask)
+        blemish = self.preload_blemish() 
+        triangle = self.preload_triangle()  
+        
+        mask = blemish * triangle # overall mask
+        
         self.sm.update_mask(mask)
     
     
     def preload_blemish(self):
-        # file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
-        # self.sm.show_saxs(file)
-        # self.plot_index.setCurrentIndex(0)
-        print("Test")
-        file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Blemish_Th5p5keV.h5'
+        print("PASS 1")
+        file = '/Users/jeffr/Desktop/data/blemish/Blemish_Th5p5keV.h5'
         with h5py.File(file, 'r') as hf:
             blemish = np.squeeze(hf.get('/lambda_pre_mask')[()])  
             blemish = np.rot90(blemish, 3)
             blemish = np.flip(blemish, 1)
+        hf.close()  
+        return blemish    
 
-            
-            return blemish    
 
     def preload_triangle(self):
-        # file = '/Users\jeffr\Desktop\suli_fall_2021\Week_06/Lambda750k.tiff'
-        # self.sm.show_saxs(file)
-        # self.plot_index.setCurrentIndex(0)
-        print("Test")
         file = '/Users/jeffr\Desktop/data/triangle_mask/mask_lambda_test.h5'
         with h5py.File(file, 'r') as hf:
-            triangle = np.squeeze(hf.get('/mask_triangular')[()])  
-            # test = np.rot90(test, 3)
-            # test = np.flip(test, 1)
-            triangle = np.flip(triangle, 1)
-            triangle = np.rot90(triangle, 3)  
+            test = np.squeeze(hf.get('/mask_triangular')[()])  
+            test = np.rot90(test, 3)
+            test = np.flip(test, 1)
+        hf.close()             
+        return test
+    
 
-            return triangle           
+
+
+
+
+    # def test_output(self, name, triangle_mask):
+    
+    #     hf = h5py.File(name +'.h5', 'w')
         
-            
+    #     # empty
+    #     empty_arr = np.array([])
+        
+    #     # defining directories
+    #     data = hf.create_group("data")
+    #     data.create_dataset('mask', data=triangle_mask) 
+    
+    #     hf.close()
+
+
+
+
+    
+    # def test(self):
+    #     print("PASSSSSS")
+        
 def run():
     # if os.name == 'nt':
     #     setup_windows_icon()

@@ -177,6 +177,7 @@ Updates:
 
 ### September 21, 2021 (Day 16)
 Updates:
+* Attended Student Connects meeting.
 * Met with QZ and Miaoqi to discuss updates to the program. We made an excel spreadsheet that explains what each data is and how to find/derive them from the GUI/program.
 * The spreadsheet can be found [here](https://drive.google.com/drive/folders/15-8h7e3sxLXSJINYhrL2zwGVaTEEpWEO?usp=sharing).
 
@@ -212,6 +213,7 @@ Updates:
 
 ### September 28, 2021 (Day 21)
 Updates:
+* Attended Student Connects meeting.
 * Met with QZ and Miaoqi to discuss updates to the program. 
 * QZ experienced errors with my program since the results deviated from what was shown in a JN. He believes error may stem from mask file. 
 * To do: 
@@ -246,6 +248,127 @@ Updates:
 
 ### October 1, 2021 (Day 24)
 Updates:
+* Presented updates in meeting. Showcased progress to Suresh who was not present last meeting.
+* Suresh mentioned needing to establish conditions in the GUI which prevents reading of wrong files. Specifically, this function would be able to differentiate between the raw data files and the meta data files. For instance, the files ending in .h5 or .hd5 will be identified as either raw data or result file to prevent errors in later steps. 
+* A potential project has risen from Francesco regarding developing slackbot tools.
+* Was having issues regarding reading the new 'yuyin' .h5 files QZ sent. Error message appears saying 'Failed to read scalar dataset. Can't open directory or file.'
+* Miaoqi sent link for plugin to hopefully fix this issue. [HDF5 - External filter plugin, installation on Windows 10](https://confluence.desy.de/display/FSEC/HDF5+-+External+filter+plugin%2C+installation+on+Windows+10).
+
+<br />
+
+
+## Week 6: 
+
+<br />
+
+
+### October 4, 2021 (Day 25)
+Updates:
+* Was able to successfully download the plugin environment and open the .h5 files. 
+* Miaoqi sent a small function for reading such files. I was able to incorporate it as part of the GUI and generated 2dsaxs and a qmap file from it.
+* Examples of plots can be found [here]().
+* Began working on improving conditions/logic for the GUI. For instance, if I were to press the 'save' button, the GUI will resave the mask and not create a new one (or crash). Other examples to work on include the ones mentioned last Friday.
+* Rewrote how data was written into the qmap file. Previously, data was all written at once in the beginning after loading of the hdf meta data file. But I decided that data should be written whenever the user decides to (i.e. whenever the buttons are pressed). I think by doing this, I found some errors in how I previously extracted data from the GUI. Hopefully, this improves the new qmaps. I sent one to QZ (for .imm) to analyze. 
+
+<br />
+
+### October 5, 2021 (Day 26)
+Updates:
+* Attended Student Connects meeting. 
+* Met with QZ and Miaoqi to discuss updates to the program.
+* QZ ran the new qmap file, said it was good, althought with slight discrepancies in one of the plots. We now need to consider implementing a blemish to remove the hot marks (vertical and horizontal lines). 
+* Continued working on conditions and other logic. Added conditions which prevent initial loading and reading of incorrect and incorrectly formatted files
+
+<br />
+
+### October 6, 2021 (Day 28)
+Updates:
+* Family emergency.
+
+
+<br />
+
+### October 7, 2021 (Day 28)
+Updates:
+* Completed UI updates. This will allow users to receive warning messages if wrong files are used (and cause the program to end).
+    1) Added conditions which prevent initial loading and reading of incorrect and incorrectly formatted files
+    2) Program will end if directory does not contain desired .bin/.imm/.hdf/.h5 file.
+    3) Improved logic behind ‘save’ and ‘compute’ buttons.
+* Created PowerPoint to present in tomorrow's meeting. PowerPoint can be found [here]().
+
+
+<br />
+
+### October 8, 2021 (Day 29)
+Updates:
+* Discussed updates and shared results in meeting. 
+* Switched focus to blemish files. Was sent .h5 file of blemish. The goal for the blemish is to have it preloaded when using the GUI. Thus, whatever maps are created will have the blemish as well. 
+* Will have to generate a qmap with the updated dynamic map. 
+
+
+<br />
+
+
+## Week 7: 
+
+<br />
+
+
+### October 11, 2021 (Day 30)
+Updates:
+* Played around with operators. Send some sample results of different operations since I was unsure what the resulting plots should look like. QZ confirmed the operation should be logical_and. 
+* Sent QZ the updated qmap, waiting for him to load and test it.
+
+<br />
+
+
+### October 12, 2021 (Day 31)
+Updates:
+* Attended Student Connects meeting. 
+* Met with QZ and Miaoqi to discuss updates to the program.
+* QZ tested the qmap, but two issues need to be addressed. 
+    1) Both static and dynamic map should be updated. 
+    2) The logical_and outputs a file of 1s and 0s while the maps should be 0-36 and 0-360 for dynamic and static, respectively.
+
+
+<br />
+
+### October 13, 2021 (Day 32)
+Updates:
+* Made the appropriate changes to the qmap. The plot that is displayed after applying ROI is a multiplication of the static map and dynamic map with the blemish applied. 
+* Some issues still come about regarding dimensions. 
+* QZ generated a q map using a triangular mask. While it is  impractical for user support, the goal is to do a rigid comparison between the qmap from Matlab and qmap from Python. He sent me the triangular mask so I can try to replicate the qmap result he attained from Matlab.
+* Worked on triangular mask. Since it was a h5 file, I figured I can upload it the same way as the blemish by preloading it.
+
+<br />
+
+### October 14, 2021 (Day 33)
+Updates:
+* Errors appear when running as the resulting plots were different. The blemish was inconsistent in the matlab example and in the qmap I created. 
+* Discussed with Miaoqi on what could be the issue. It turns out that I should not have replaced the blemish with the triangular mask, but should preload the blemish and the triangular mask separately. 
+* Worked on making these changes and developing these plots separately from the GUI.
+
+<br />
+
+### October 15, 2021 (Day 34)
+Updates:
+* Discussed updates and shared results in meeting. 
+* Showed the changes I made and the resulting plots achieved. Plotted the differences between the example matlab plot and the one I generated. 
+* One thing that should be changed is the restricting the add_roi since I am predetermining the mask (triangle).
+* Will need to configure the GUI to accept these changes. Need to generate a new qmap file.
+
+<br />
+
+
+## Week 8: 
+
+<br />
+
+
+
+### October 18, 2021 (Day 35)
+
+<br />
 
 
 

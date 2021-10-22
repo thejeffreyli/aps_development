@@ -135,6 +135,10 @@ class Ui_MainWindow(object):
         self.btn_load.setObjectName("btn_load")
         self.gridLayout_2.addWidget(self.btn_load, 1, 0, 1, 1)
         
+        self.test_button = QtWidgets.QPushButton(self.groupBox) # <-------- testing preload function
+        self.test_button.setObjectName("test_button")
+        self.gridLayout_2.addWidget(self.test_button, 1, 1, 1, 1)        
+        
         
         
         self.fname = QtWidgets.QLineEdit(self.groupBox)
@@ -386,7 +390,13 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "energy (keV):"))
         self.label_7.setText(_translate("MainWindow", "detector shape:"))
         self.label_3.setText(_translate("MainWindow", "center y:"))
+        
+        
         self.btn_load.setText(_translate("MainWindow", "load data"))
+        
+        self.test_button.setText(_translate("MainWindow", "TEST")) # <--- testing preload function
+        
+        
         self.fname.setPlaceholderText(_translate("MainWindow", "filename"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Plot"))
         self.plot_cmap.setItemText(0, _translate("MainWindow", "jet"))
