@@ -122,7 +122,7 @@ class SimpleMask(object):
                 if key == 'saxs':
                     continue
                 data.create_dataset(key, data=val)
-        print('partion map is saved')
+        print('partition map is saved')
 
     def ver_hdf(self, file):
         with h5py.File(file, 'r') as hf:
@@ -336,15 +336,13 @@ class SimpleMask(object):
     
     def add_roi_test(self, **kwargs):
         
-        print("roi test")
-        
+
         file = '/Users/jeffr/Desktop/data/triangle_mask/mask_lambda_test.h5'
         #file = '../tests/data/triangle_mask/mask_lambda_test.h5'
         
         
         with h5py.File(file, 'r') as hf:
             mask = np.squeeze(hf.get('/mask_triangular')[()])
-            print(mask)
             mask = np.rot90(mask, 3)
             mask = np.flip(mask, 1)
         self.mask = self.mask * mask
@@ -417,13 +415,9 @@ class SimpleMask(object):
     def add_roi(self, num_edges=None, radius=60, color='r', sl_type='Polygon',
                 width=3, sl_mode='exclusive'):
         
-        print("add_roi(self, num_edges=None, radius=60") #<---------------------------------------------------------
-        
         # self.add_roi_test() 
         # return
-    
-        print("here")
-    
+
         shape = self.data.shape
         cen = (shape[1] // 2, shape[2] // 2)
         if sl_mode == 'inclusive':
