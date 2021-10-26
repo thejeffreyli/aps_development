@@ -335,32 +335,21 @@ class SimpleMask(object):
         return
     
     def add_roi_test(self, **kwargs):
-        
-        print("roi test")
-        
-        file = '/Users/jeffr/Desktop/data/triangle_mask/mask_lambda_test.h5'
-        #file = '../tests/data/triangle_mask/mask_lambda_test.h5'
-        
-        
+        file = '../tests/data/triangle_mask/mask_lambda_test.h5'
         with h5py.File(file, 'r') as hf:
             mask = np.squeeze(hf.get('/mask_triangular')[()])
-            print(mask)
             mask = np.rot90(mask, 3)
             mask = np.flip(mask, 1)
         self.mask = self.mask * mask
         self.data[1:] *= self.mask
 
-        # f2 = 'C:/Users/jeffr/Desktop/data/triangle_mask/jeffrey_GUI_test.h5'
-        # # f2 = '../tests/data/jeffrey_GUI_test.h5'
-        # with h5py.File(f2, 'r') as hf:
-        #     mask = np.squeeze(hf.get('/data/mask')[()])
-        # self.mask = self.mask * mask
-        # self.data[1:] *= self.mask
-
-
+        f2 = '../tests/data/jeffrey_GUI_test.h5'
+        with h5py.File(f2, 'r') as hf:
+            mask = np.squeeze(hf.get('/data/mask')[()])
+        self.mask = self.mask * mask
+        self.data[1:] *= self.mask
 
     def apply_roi(self):
-        
         if self.meta is None or self.data_raw is None:
             return
         if len(self.hdl.roi) <= 0:
@@ -416,14 +405,8 @@ class SimpleMask(object):
 
     def add_roi(self, num_edges=None, radius=60, color='r', sl_type='Polygon',
                 width=3, sl_mode='exclusive'):
-        
-        print("add_roi(self, num_edges=None, radius=60") #<---------------------------------------------------------
-        
-        # self.add_roi_test() 
-        # return
-    
-        print("here")
-    
+        self.add_roi_test()
+        return
         shape = self.data.shape
         cen = (shape[1] // 2, shape[2] // 2)
         if sl_mode == 'inclusive':

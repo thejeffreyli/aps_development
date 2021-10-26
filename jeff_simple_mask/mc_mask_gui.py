@@ -44,9 +44,8 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.btn_plot.clicked.connect(self.plot)
         self.btn_editlock.clicked.connect(self.editlock)
         self.btn_compute_qpartition.clicked.connect(self.compute_partition)
-        self.btn_select_raw.clicked.connect(self.select_raw) # ... 
-        self.btn_select_blemish.clicked.connect(self.select_blemish) # ... 
-        
+        self.btn_select_raw.clicked.connect(self.select_raw)
+        self.btn_select_blemish.clicked.connect(self.select_blemish)
 
         # need a function for save button -- simple_mask_ui
         self.pushButton.clicked.connect(self.save_mask)
@@ -54,29 +53,15 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         self.plot_index.currentIndexChanged.connect(self.mp1.setCurrentIndex)
 
         # debug;
-        # C:/Users/jeffr/Desktop/data/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_0001-1000.hdf
-        self.blemish_fname.setText('')
-        self.save_fname.setText('')     
-        
-        # self.save_fname.setText('../tests/data/qmap_output_simplemask.hdf')
-        self.fname.setText('')
+        self.blemish_fname.setText('../tests/data/blemish/Blemish_Th5p5keV.h5')
+        self.save_fname.setText('../tests/data/qmap_output_simplemask.hdf')
+        self.fname.setText('../tests/data/H432_OH_100_025C_att05_001/H432_OH_100_025C_att05_001_0001-1000.hdf')
 
         # simple mask kernel
         self.sm = SimpleMask(self.mp1, self.infobar)
         self.mp1.sigTimeChanged.connect(self.update_index)
         self.state = 'lock'
-        
-        
-        # ---------------------------------------------------------------------------------
-        # preloaded mask - in progress
-        
-        self.mask_fname.clicked.connect(self.select_mask_file) # ...   
-        # buttons for select, preview, apply mask
-        self.pushButton_2.clicked.connect(self.load_mask) #select --> load mask
-        self.pushButton_4.clicked.connect(self.test) #preview
-        self.pushButton_3.clicked.connect(self.test) #preview
-        
-        # ---------------------------------------------------------------------------------
+
         self.show()
 
     def update_index(self):
@@ -114,8 +99,6 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
         if fname not in [None, '']:
             self.blemish_fname.setText(fname)
         return
-    
-
 
     def load(self):
         fname = self.fname.text()
@@ -183,31 +166,6 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
             self.compute_partition()
         save_fname = self.save_fname.text()
         self.sm.save_partition(save_fname)
-
-
-
-
-    # ---------------------------------------------------------------------------------
-    
-    # preloaded mask - in progress
-    def select_mask_file(self):
-        fname = QFileDialog.getOpenFileName(self, 'Select mask')[0]
-        if fname not in [None, '']:
-            self.mask_preload.setText(fname)
-            
-        return 
-    
-    def load_mask(self):
-        print("pass")
-        print(self.mask_directory)
-        
-    def test(self):
-        print("pass")
-        
-    
-    # ---------------------------------------------------------------------------------
-
-
 
 
 
