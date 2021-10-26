@@ -199,7 +199,6 @@ class SimpleMaskGUI(QtWidgets.QMainWindow, Ui):
     
     def load_mask(self):
         print("pass")
-        print(self.mask_directory)
         
     def test(self):
         print("pass")
