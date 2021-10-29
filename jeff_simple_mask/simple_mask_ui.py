@@ -52,6 +52,7 @@ class Ui_SimpleMask(object):
         self.label_17 = QtWidgets.QLabel(self.groupBox)
         self.label_17.setObjectName("label_17")
         self.gridLayout_2.addWidget(self.label_17, 0, 0, 1, 1)
+        
         self.fname = QtWidgets.QLineEdit(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -71,6 +72,10 @@ class Ui_SimpleMask(object):
         self.label_16 = QtWidgets.QLabel(self.groupBox)
         self.label_16.setObjectName("label_16")
         self.gridLayout_2.addWidget(self.label_16, 1, 0, 1, 1)
+        self.label_txt = QtWidgets.QLabel(self.groupBox)
+        self.label_txt.setObjectName("label_txt")
+        self.gridLayout_2.addWidget(self.label_txt, 2, 0, 1, 1)        
+        
         self.blemish_fname = QtWidgets.QLineEdit(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -80,10 +85,24 @@ class Ui_SimpleMask(object):
         self.blemish_fname.setObjectName("blemish_fname")
         self.gridLayout_2.addWidget(self.blemish_fname, 1, 1, 1, 1)
         
+        self.text_fname = QtWidgets.QLineEdit(self.groupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.text_fname.sizePolicy().hasHeightForWidth())
+        self.text_fname.setSizePolicy(sizePolicy)
+        self.text_fname.setObjectName("text_fname")
+        self.gridLayout_2.addWidget(self.text_fname, 2, 1, 1, 1)
         
-        self.btn_select_blemish = QtWidgets.QToolButton(self.groupBox) #<----------------------------------
+        
+        self.btn_select_blemish = QtWidgets.QToolButton(self.groupBox) 
         self.btn_select_blemish.setObjectName("btn_select_blemish")
         self.gridLayout_2.addWidget(self.btn_select_blemish, 1, 2, 1, 1)
+        
+        self.btn_select_txt = QtWidgets.QToolButton(self.groupBox) 
+        self.btn_select_txt.setObjectName("btn_select_txt")
+        self.gridLayout_2.addWidget(self.btn_select_txt, 2, 2, 1, 1)
+        
         self.gridLayout_16.addLayout(self.gridLayout_2, 0, 0, 1, 1)
         self.gridLayout_10 = QtWidgets.QGridLayout()
         self.gridLayout_10.setObjectName("gridLayout_10")
@@ -481,6 +500,7 @@ class Ui_SimpleMask(object):
         self.plot_index.addItem("")
         self.plot_index.addItem("")
         self.plot_index.addItem("")
+        self.plot_index.addItem("")        
         self.gridLayout.addWidget(self.plot_index, 0, 0, 1, 1)
         self.label_11 = QtWidgets.QLabel(self.groupBox_5)
         self.label_11.setObjectName("label_11")
@@ -532,13 +552,17 @@ class Ui_SimpleMask(object):
         _translate = QtCore.QCoreApplication.translate
         SimpleMask.setWindowTitle(_translate("SimpleMask", "MainWindow"))
         self.groupBox.setTitle(_translate("SimpleMask", "Input"))
-        self.label_17.setText(_translate("SimpleMask", "raw:"))
+        self.label_17.setText(_translate("SimpleMask", "raw:")) # <----------------------------------------------------raw:
         self.fname.setPlaceholderText(_translate("SimpleMask", "filename"))
         self.blemish_fname.setPlaceholderText(_translate("SimpleMask", "blemishfile"))        
+        self.text_fname.setPlaceholderText(_translate("SimpleMask", "blemishtxtfile"))             
         
-        self.btn_select_raw.setText(_translate("SimpleMask", "...")) # <---------------------------------
-        self.label_16.setText(_translate("SimpleMask", "blemish:"))
-        self.btn_select_blemish.setText(_translate("SimpleMask", "...")) # <---------------------------------
+        self.btn_select_raw.setText(_translate("SimpleMask", "...")) 
+        self.label_16.setText(_translate("SimpleMask", "blemish:"))  # <----------------------------------------------------blemish:
+        self.label_txt.setText(_translate("SimpleMask", "text:"))  # <----------------------------------------------------text_blemish:     
+        self.btn_select_blemish.setText(_translate("SimpleMask", "...")) 
+        self.btn_select_txt.setText(_translate("SimpleMask", "...")) 
+        
         self.label_2.setText(_translate("SimpleMask", "center x:"))
         self.label_3.setText(_translate("SimpleMask", "center y:"))
         self.label_5.setText(_translate("SimpleMask", "detor distance (mm):"))
@@ -618,10 +642,11 @@ class Ui_SimpleMask(object):
         self.plot_index.setItemText(2, _translate("SimpleMask", "mask"))
         self.plot_index.setItemText(3, _translate("SimpleMask", "dynamic_q_partition"))
         self.plot_index.setItemText(4, _translate("SimpleMask", "static_q_partition"))
+
+        self.plot_index.setItemText(5, _translate("SimpleMask", "preview"))        
+        
         self.label_11.setText(_translate("SimpleMask", "coordinates:"))
-        
-        
-        self.mask_fname.setText(_translate("SimpleMask", "...")) # <---------------------------------
+        self.mask_fname.setText(_translate("SimpleMask", "...")) 
 
         
 from pyqtgraph_mod import ImageViewROI

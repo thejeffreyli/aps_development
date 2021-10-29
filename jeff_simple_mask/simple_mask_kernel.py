@@ -3,6 +3,7 @@ import h5py
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore
+
 # import matplotlib.pyplot as plt
 
 
@@ -59,7 +60,8 @@ class SimpleMask(object):
             # 5: "qx",
             # 6: "qy",
             3: "dqmap_partition",
-            4: "sqmap_partition"
+            4: "sqmap_partition",
+            5: "preview"
         }
 
     def load_meta(self, fname):
@@ -185,15 +187,27 @@ class SimpleMask(object):
                             return None
 
         return None
-
+    
+    
+    
+    
+    
+    
+    
+#-------------------------------------------------------------------------------------------------
     # generate 2d saxs
-    def read_data(self, fname=None, blemish_fname=None):
+    def read_data(self, fname=None, blemish_fname=None, text_fname=None):
         # blemish file if the fname is specified;
         if blemish_fname is not None:
+            
+            x_list, y_list = self.read_txt(text_fname)        
             with h5py.File(blemish_fname, 'r') as hf:
                 blemish = np.squeeze(hf.get('/lambda_pre_mask')[()])
                 blemish = np.rot90(blemish, 3)
                 blemish = np.flip(blemish, 1)
+                
+            for i in range(len(x_list)):
+                blemish[x_list[i]][y_list[i]] = 0              
         else:
             blemish = None
 
@@ -334,28 +348,28 @@ class SimpleMask(object):
 
         return
     
-    def add_roi_test(self, **kwargs):
+    def select_mask(self, mask_preload, mask_directory):
         
+        # with h5py.File(mask_preload, 'r') as hf:
+        #     mask = np.squeeze(hf.get(mask_directory)[()])
+        #     mask = np.rot90(mask, 3)
+        #     mask = np.flip(mask, 1)
 
-        file = '/Users/jeffr/Desktop/data/triangle_mask/mask_lambda_test.h5'
-        #file = '../tests/data/triangle_mask/mask_lambda_test.h5'
-        
-        
-        with h5py.File(file, 'r') as hf:
+        with h5py.File(mask_preload, 'r') as hf:
             mask = np.squeeze(hf.get('/mask_triangular')[()])
             mask = np.rot90(mask, 3)
             mask = np.flip(mask, 1)
+
+        print("mask selected")
+        return mask
+
+
+    def preview_mask(self, file):
+        print("test")
+
+    def apply_mask(self, mask):
         self.mask = self.mask * mask
         self.data[1:] *= self.mask
-
-        # f2 = 'C:/Users/jeffr/Desktop/data/triangle_mask/jeffrey_GUI_test.h5'
-        # # f2 = '../tests/data/jeffrey_GUI_test.h5'
-        # with h5py.File(f2, 'r') as hf:
-        #     mask = np.squeeze(hf.get('/data/mask')[()])
-        # self.mask = self.mask * mask
-        # self.data[1:] *= self.mask
-
-
 
     def apply_roi(self):
         
@@ -595,6 +609,18 @@ class SimpleMask(object):
         for key in ['bcx', 'bcy', 'energy', 'pix_dim', 'det_dist']:
             val.append(self.meta[key])
         return val
+
+
+    def read_txt(self, file):
+        x_list = []
+        y_list = []
+        with open(file) as f:
+            for line in f:
+                x, y = line.strip().split(",")
+                x_list.append(int(x) - 1)
+                y_list.append(int(y) - 1)
+        return x_list, y_list
+
 
 
 def test01():
