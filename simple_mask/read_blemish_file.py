@@ -38,8 +38,8 @@ def read_txt(file):
     with open(file) as f:
         for line in f:
             x, y = line.strip().split(",")
-            x_list.append(int(x) + 1)
-            y_list.append(int(y) + 1)
+            x_list.append(int(x) - 1)
+            y_list.append(int(y) - 1)
     return x_list, y_list
     
 def main():
