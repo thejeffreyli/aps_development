@@ -479,6 +479,7 @@ Updates:
 <br />
 
 ### November 2, 2021 (Day 46)
+Updates:
 * Attended meeting with Pete Jemian and QZ for possible work to be done on Bluesky. Bluesky is a Python platform used at APS for XPCS. 
 * Attended Student Connects meeting. 
 * Met with QZ and Miaoqi to discuss updates to the program.
@@ -487,15 +488,19 @@ Updates:
 <br />
 
 ### November 3, 2021 (Day 47)
+Updates:
 * Updated Git Repo in terms of pushing new changes and cleaning up directories. 
 * Caught up on logs and uploading files/links. 
-* Previewed Henry's GUI program for wide-angle. 
+* Previewed and played around with Henry's GUI program for wide-angle. 
 
 
 <br />
 
 ### November 4, 2021 (Day 48)
+Updates:
 * 
+
+
 <br />
 
 ### November 5, 2021 (Day 49)
