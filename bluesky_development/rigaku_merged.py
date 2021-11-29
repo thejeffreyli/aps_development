@@ -7,31 +7,36 @@ from bluesky import plan_stubs as bps
 class Rigaku500k_Cam1(Device):
     
     # CAM1
-    acquire_time = Cpt(EpicsSignal, '8idRigaku:cam1:AcquireTime')
-    image_mode = Cpt(EpicsSignal, '8idRigaku:cam1:ImageMode')
-    trigger_mode = Cpt(EpicsSignal, '8idRigaku:cam1:TriggerMode')
-    num_images = Cpt(EpicsSignal, '8idRigaku:cam1:NumImages')
-    corrections = Cpt(EpicsSignal, '8idRigaku:cam1:Corrections')
-    data_type = Cpt(EpicsSignal, '8idRigaku:cam1:DataType')
+    acquire_time = Cpt(EpicsSignal, 'AcquireTime')
+    image_mode = Cpt(EpicsSignal, 'ImageMode')
+    trigger_mode = Cpt(EpicsSignal, 'TriggerMode')
+    num_images = Cpt(EpicsSignal, 'NumImages')
+    corrections = Cpt(EpicsSignal, 'Corrections')
+    data_type = Cpt(EpicsSignal, 'DataType')
     
-    det_state = Cpt(EpicsSignal, '8idRigaku:cam1:AcquisitionDelay') 
-    file_name = Cpt(EpicsSignal, '8idRigaku:cam1:FileName')    
-    acquire = Cpt(EpicsSignal, '8idRigaku:cam1:Acquire')  
-    num_que_arrays = Cpt(EpicsSignal, '8idRigaku:cam1:NumQueuedArrays') 
+    det_state = Cpt(EpicsSignal, 'AcquisitionDelay') 
+    file_name = Cpt(EpicsSignal, 'FileName')    
+    acquire = Cpt(EpicsSignal, 'Acquire')  
+    num_que_arrays = Cpt(EpicsSignal, 'NumQueuedArrays') 
 
 class Rigaku500k_HDF1(Device):
     # HDF1
-    auto_inc = Cpt(EpicsSignal, '8idRigaku:HDF1:AutoIncrement') 
-    num_capture = Cpt(EpicsSignal, '8idRigaku:HDF1:NumCapture')
-    file_name = Cpt(EpicsSignal, '8idRigaku:HDF1:FileName')
-    file_num = Cpt(EpicsSignal, '8idRigaku:HDF1:FileNumber')
-    capture = Cpt(EpicsSignal, '8idRigaku:HDF1:Capture_RBV')
-
+    auto_inc = Cpt(EpicsSignal, 'AutoIncrement') 
+    num_capture = Cpt(EpicsSignal, 'NumCapture')
+    file_name = Cpt(EpicsSignal, 'FileName')
+    file_num = Cpt(EpicsSignal, 'FileNumber')
+    capture = Cpt(EpicsSignal, 'Capture_RBV')
 
 # object
 class Rigaku500k(Device):
-    cam1 = Cpt(Rigaku500k_Cam1)
-    hdf1 = Cpt(Rigaku500k_HDF1)
+    # cam1 = Cpt(Rigaku500k_Cam1)
+    # hdf1 = Cpt(Rigaku500k_HDF1)
+    cam1 = Rigaku500k_Cam1('8idRigaku:cam1:', name='cam1')
+    hdf1 = Rigaku500k_HDF1('8idRigaku:HDF1:', name='hdf1')
+
+
+
+# -----------------------------------------------------------------------------
 
 def Rigaku_Slow(rigaku500k):
     
@@ -82,6 +87,8 @@ def Rigaku_Slow(rigaku500k):
         # unix('date')            
         print("\n")  
 
+
+
 def Rigaku_Fast(rigaku500k):
     yield from bps.mv(rigaku500k.cam1.acquire_time, 30e-6)    
     yield from bps.mv(rigaku500k.cam1.image_mode, 5)   
@@ -113,11 +120,11 @@ def Rigaku_Fast(rigaku500k):
                 bps.sleep(0.1)
 
 
-
-
+# Creating a custom device 
+test_object = Rigaku500k(name="test_object")
 
 def main():
-    test_object = Rigaku500k(name="test_object")
+    # test_object = Rigaku500k(name="test_object")
     Rigaku_Fast(test_object)
     Rigaku_Slow(test_object)
     
