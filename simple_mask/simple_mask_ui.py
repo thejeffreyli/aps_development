@@ -552,7 +552,7 @@ class Ui_SimpleMask(object):
         _translate = QtCore.QCoreApplication.translate
         SimpleMask.setWindowTitle(_translate("SimpleMask", "MainWindow"))
         self.groupBox.setTitle(_translate("SimpleMask", "Input"))
-        self.label_17.setText(_translate("SimpleMask", "raw:")) # <----------------------------------------------------raw:
+        self.label_17.setText(_translate("SimpleMask", "metadata:")) # <----------------------------------------------------raw:
         self.fname.setPlaceholderText(_translate("SimpleMask", "filename"))
         self.blemish_fname.setPlaceholderText(_translate("SimpleMask", "blemishfile"))        
         self.text_fname.setPlaceholderText(_translate("SimpleMask", "blemishtxtfile"))             
