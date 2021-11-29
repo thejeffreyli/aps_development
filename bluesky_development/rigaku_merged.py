@@ -35,7 +35,8 @@ class Rigaku500k(Device):
     hdf1 = Rigaku500k_HDF1('8idRigaku:HDF1:', name='hdf1')
 
 
-
+# Creating a custom device 
+test_object = Rigaku500k(name="test_object")
 # -----------------------------------------------------------------------------
 
 def Rigaku_Slow(rigaku500k):
@@ -119,9 +120,9 @@ def Rigaku_Fast(rigaku500k):
             while rigaku500k.cam1.det_state != "Idle":
                 bps.sleep(0.1)
 
+# -----------------------------------------------------------------------------
 
-# Creating a custom device 
-test_object = Rigaku500k(name="test_object")
+
 
 def main():
     # test_object = Rigaku500k(name="test_object")
