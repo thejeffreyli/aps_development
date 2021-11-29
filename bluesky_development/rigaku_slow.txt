@@ -1,0 +1,51 @@
+
+
+################### Initialize ###################
+
+unix('rm -rf /home/8ididata/RigakuEpics/test*')
+
+epics_put("8idRigaku:cam1:ImageMode","16 Bit, 1S") 
+epics_put("8idRigaku:cam1:TriggerMode","Fixed Time")
+epics_put("8idRigaku:cam1:DataType","UInt16")
+epics_put("8idRigaku:IMM1:AutoIncrement", "Yes")
+
+max_repeats=10
+number_of_frames=10000
+epics_put("8idRigaku:cam1:NumImages",number_of_frames)
+epics_put("8idRigaku:IMM1:NumCapture",number_of_frames)
+
+
+################### Test t0 = 0.001 s ###################
+
+acq_t = 0.001
+
+epics_put("8idRigaku:cam1:AcquireTime",acq_t);
+
+for (ival=1;ival<=max_repeats;ival++) {
+
+    _filename=sprintf("test_%03dms_%02d.bin",acq_t*1000,ival)
+
+    unix('date')
+    printf("Start Rigaku %s\n",_filename);
+
+    epics_put("8idRigaku:IMM1:FileName",_filename)
+    epics_put("8idRigaku:IMM1:FileNumber",1)
+    epics_put("8idRigaku:IMM1:Capture",1) #save imm 
+    sleep(0.05);
+
+    if(epics_get("8idRigaku:cam1:DetectorState_RBV") == "Idle") {
+        epics_put("8idRigaku:cam1:Acquire",1)
+        sleep(0.1);
+    }    
+    
+    while(epics_get("8idRigaku:IMM1:Capture") != "Done") {
+        sleep(0.1);
+    }
+
+    while(epics_get("8idRigaku:cam1:NumQueuedArrays") > 0) {
+        sleep(0.1);
+    }
+    unix('date')
+    printf("\n");
+
+}

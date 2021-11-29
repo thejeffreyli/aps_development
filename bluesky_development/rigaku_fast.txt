@@ -1,0 +1,39 @@
+
+epics_put("8idRigaku:cam1:AcquireTime",20e-6);
+epics_put("8idRigaku:cam1:ImageMode",5) ##ZDT
+epics_put("8idRigaku:cam1:TriggerMode",4) ##ZDT Fixed Time
+
+epics_put("8idRigaku:cam1:NumImages",100000)
+epics_put("8idRigaku:cam1:Corrections","Enabled")
+epics_put("8idRigaku:cam1:DataType","UInt32")
+
+max_repeats=2
+
+unix('rm -rf /home/8ididata/RigakuEpics/test*')
+
+for (ii=1; ii<=10; ii++) {
+
+    for (ival=1;ival<=max_repeats;ival++) {
+
+        _filename=sprintf("ZDT%02d_%06d.bin",ii,ival)
+
+        while(epics_get("8idRigaku:cam1:DetectorState_RBV") != "Idle") {
+            sleep(0.1)
+        }
+        printf("Start Rigaku Acquire %s\n",_filename);
+
+        while(epics_get("8idRigaku:cam1:DetectorState_RBV") == "Idle") {
+            sleep(0.1)
+            epics_put("8idRigaku:cam1:FileName",_filename)
+            epics_put("8idRigaku:cam1:Acquire",1)
+            continue
+        }
+
+        while(epics_get("8idRigaku:cam1:DetectorState_RBV") != "Idle") {
+            sleep(0.1)
+        }
+        printf("Rigaku Acquire Complete\n\n")
+        
+    }
+
+}
