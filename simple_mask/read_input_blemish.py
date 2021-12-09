@@ -61,8 +61,5 @@ def main():
     file2 = '/Users/jeffr/Desktop/data/blemish/test.h5'
     blemish_new = replace_blem(blemish, x_coord, y_coord, program)    
 
-    # write_data(file2, blemish_new)
-
-
 if __name__ == '__main__':
     main()

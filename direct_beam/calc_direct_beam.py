@@ -1,6 +1,11 @@
 import h5py
 import numpy as np
 import argparse
+import pandas as pd 
+import time
+
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 # import program
 from imm_reader_with_plot import IMMReader8ID
@@ -26,9 +31,35 @@ def read_imm(imm_file):
     # print( len(img_2D. shape))
     return img_2D
 
+def plot_pix_avg(pixel_avg):
+    fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+    colormap = plt.cm.jet
+    colormap.set_under(color='w')
+    
+    # det_dist = config['detector_distance']
+    # ccd_x0 = config['beam_center_x']
+    # ccd_y0 = config['beam_center_y']
+    # pixel_size = config['pixel_size']
+    # x_energy = config['x_energy']
+
+    # pix2q = pixel_size/det_dist*(2*3.1416/(12.4/x_energy))
+    # y_min = ((0-ccd_x0)*pix2q).item()
+    # y_max = ((pixel_avg.shape[1]-ccd_x0)*pix2q).item()
+    # x_min = (0-ccd_y0)*pix2q.item()
+    # x_max = (pixel_avg.shape[0]-ccd_y0)*pix2q.item()
+
+    im = ax.imshow(pixel_avg, 
+                 cmap=colormap, 
+                 norm=colors.LogNorm(vmin=np.min(pixel_avg), vmax=np.max(pixel_avg)),
+                 interpolation='none')
+    fig.colorbar(im, ax=ax)
+    plt.rc('font', size=20)
+
+    return ax
+
 def main():
     
-    '''
+    ''' 
     # set up the program to take in arguments from the command line
     parser = argparse.ArgumentParser()
 
@@ -62,29 +93,34 @@ def main():
     img_2d = read_imm(args.imm_file)
     '''    
     #-----------------------------------------------------------------------------------
+    t0 = time.time()
     
+    # hdf file
     file1 = '/Users/jeffr/Desktop/data/E005_D100_Lq1_025C_att03_001/E005_D100_Lq1_025C_att03_001_0001-1000.hdf'
     x_guess = 780.6 # change to input parameters
     y_guess = 259.4
     
     pix2q = extract_pix2q(file1)
     
+    # IMM file    
     file2 = '/Users/jeffr/Desktop/data/E005_D100_Lq1_025C_att03_001/E005_D100_Lq1_025C_att03_001_00001-01000.imm'
     img_2D = read_imm(file2)
     
-    print(img_2D)
     
-    # parameters for meshgrid                                                                 # <------------------------?
-    pix_pos_x, pix_pos_y = np.meshgrid(len(img_2D[0]),len(img_2D))
+    # parameters for meshgrid                                                                 
+    x = np.arange(0, len(img_2D[0]))
+    y = np.arange(0, len(img_2D))    
+                                                
+    pix_pos_x, pix_pos_y = np.meshgrid(x,y)
     
-    dim_x = 81 # change to input parameters
-    dim_y = 91
+
+    dim_x = 100 # change to input parameters
+    dim_y = 100
     step_size = 0.1
     
     ROI_Dev = np.zeros((dim_x, dim_y))
-    # print(ROI_Dev)
 
-    x0 = np.zeros(dim_x)
+    x0 = np.zeros(dim_x)    
     y0 = np.zeros(dim_y)
 
     
@@ -96,18 +132,24 @@ def main():
             y0[jj] = y_guess + (jj-np.floor(dim_y/2))*step_size
             # print(y0[jj])
             Q_map = np.sqrt((pix_pos_x-x0[ii])**2 + (pix_pos_y-y0[jj])**2)*pix2q
-    
-            # print(Q_map)
-            # if Q_map>0.0065 & Q_map < 0.0075 :
-            #     Int_ROI = img_2D[Q_map]
-            #     print(Int_ROI)
-            # else:
-            #     Int_ROI = img_2D[0]
-                
-                
-            # Int_ROI = img_2D(Q_map>0.0065 & Q_map<0.0075) # <------------------------? # put 0 if outside  conditions
-            # ROI_Dev[ii][jj] = np.var(Int_ROI)/np.mean(Int_ROI)/np.mean(Int_ROI);
             
+            bool_arr = np.where((Q_map > 0.0065) & (Q_map < 0.0075), 1, 0)
+            # np.nonzero returns indices 
+            nz = np.nonzero(bool_arr) # indices
+            Int_ROI = img_2D[nz] # 1D array 
+            
+            ROI_Dev[ii][jj] = np.var(Int_ROI)/np.square(np.mean(Int_ROI)) # mean^2  # normalization
+
+    # print(ROI_Dev)
+
+    # pd.DataFrame(ROI_Dev).to_csv("test.csv") # create plot
+
+
+    plot_pix_avg(ROI_Dev)
+    
+    t1 = time.time() # 148.85632467269897           
+    total = t1-t0
+    print(total)    
             
 if __name__ == '__main__':
     main()

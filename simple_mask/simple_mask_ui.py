@@ -565,7 +565,7 @@ class Ui_SimpleMask(object):
         
         self.label_2.setText(_translate("SimpleMask", "center x:"))
         self.label_3.setText(_translate("SimpleMask", "center y:"))
-        self.label_5.setText(_translate("SimpleMask", "detor distance (mm):"))
+        self.label_5.setText(_translate("SimpleMask", "detector distance (mm):"))
         self.label_4.setText(_translate("SimpleMask", "energy (keV):"))
         self.label_21.setText(_translate("SimpleMask", "detector pitch (deg):"))
         self.label_7.setText(_translate("SimpleMask", "detector shape:"))
