@@ -31,31 +31,20 @@ def read_imm(imm_file):
     # print( len(img_2D. shape))
     return img_2D
 
-def plot_pix_avg(pixel_avg):
+def plot_fig(ROI_Dev):
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
     colormap = plt.cm.jet
     colormap.set_under(color='w')
     
-    # det_dist = config['detector_distance']
-    # ccd_x0 = config['beam_center_x']
-    # ccd_y0 = config['beam_center_y']
-    # pixel_size = config['pixel_size']
-    # x_energy = config['x_energy']
-
-    # pix2q = pixel_size/det_dist*(2*3.1416/(12.4/x_energy))
-    # y_min = ((0-ccd_x0)*pix2q).item()
-    # y_max = ((pixel_avg.shape[1]-ccd_x0)*pix2q).item()
-    # x_min = (0-ccd_y0)*pix2q.item()
-    # x_max = (pixel_avg.shape[0]-ccd_y0)*pix2q.item()
-
-    im = ax.imshow(pixel_avg, 
+    im = ax.imshow(ROI_Dev, 
                  cmap=colormap, 
-                 norm=colors.LogNorm(vmin=np.min(pixel_avg), vmax=np.max(pixel_avg)),
+                 norm=colors.LogNorm(vmin=np.min(ROI_Dev), vmax=np.max(ROI_Dev)),
                  interpolation='none')
     fig.colorbar(im, ax=ax)
     plt.rc('font', size=20)
 
     return ax
+
 
 def main():
     
@@ -94,6 +83,7 @@ def main():
     '''    
     #-----------------------------------------------------------------------------------
     t0 = time.time()
+    print(t0)
     
     # hdf file
     file1 = '/Users/jeffr/Desktop/data/E005_D100_Lq1_025C_att03_001/E005_D100_Lq1_025C_att03_001_0001-1000.hdf'
@@ -106,7 +96,6 @@ def main():
     file2 = '/Users/jeffr/Desktop/data/E005_D100_Lq1_025C_att03_001/E005_D100_Lq1_025C_att03_001_00001-01000.imm'
     img_2D = read_imm(file2)
     
-    
     # parameters for meshgrid                                                                 
     x = np.arange(0, len(img_2D[0]))
     y = np.arange(0, len(img_2D))    
@@ -114,38 +103,51 @@ def main():
     pix_pos_x, pix_pos_y = np.meshgrid(x,y)
     
 
-    dim_x = 100 # change to input parameters
-    dim_y = 100
-    step_size = 0.1
+    dim_x = 81 # change to input parameters
+    dim_y = 91
+    step_size = 0.11
     
-    ROI_Dev = np.zeros((dim_x, dim_y))
+    # row, col
+    ROI_Dev = np.zeros((dim_y, dim_x))
 
     x0 = np.zeros(dim_x)    
     y0 = np.zeros(dim_y)
 
-    
+
     for ii in range(dim_x):
         for jj in range(dim_y):        
 
             x0[ii] = x_guess + (ii-np.floor(dim_x/2))*step_size
+            # x0[ii] = x_guess + (ii-(dim_x/2))*step_size
             # print(x0[ii])
             y0[jj] = y_guess + (jj-np.floor(dim_y/2))*step_size
+            # y0[jj] = y_guess + (jj-(dim_y/2))*step_size
             # print(y0[jj])
             Q_map = np.sqrt((pix_pos_x-x0[ii])**2 + (pix_pos_y-y0[jj])**2)*pix2q
             
-            bool_arr = np.where((Q_map > 0.0065) & (Q_map < 0.0075), 1, 0)
+            # bool_arr = np.where((Q_map > 0.0060) & (Q_map < 0.0080), 1, 0)
+            bool_arr = np.where((Q_map > 0.0067) & (Q_map < 0.0073), 1, 0)        
+  
             # np.nonzero returns indices 
             nz = np.nonzero(bool_arr) # indices
             Int_ROI = img_2D[nz] # 1D array 
             
-            ROI_Dev[ii][jj] = np.var(Int_ROI)/np.square(np.mean(Int_ROI)) # mean^2  # normalization
+            ROI_Dev[jj][ii] = np.var(Int_ROI)/np.square(np.mean(Int_ROI)) # mean^2  # normalization
 
     # print(ROI_Dev)
 
-    # pd.DataFrame(ROI_Dev).to_csv("test.csv") # create plot
+
+    pd.DataFrame(ROI_Dev).to_csv("data.csv",header=False, index=False) # create plot
 
 
-    plot_pix_avg(ROI_Dev)
+    plot_fig(ROI_Dev)
+    
+    # print(ROI_Dev.min())
+    # print(np.min(ROI_Dev))
+
+    # result = np.where(ROI_Dev == np.min(ROI_Dev))
+    # print(result)
+    
     
     t1 = time.time() # 148.85632467269897           
     total = t1-t0
