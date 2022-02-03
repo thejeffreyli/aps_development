@@ -23,8 +23,8 @@ class estimate_shadow():
         path = root + '/'+ 'img_kmeans.png'        
         
         img_2D = np.array(self.img_2D)
-        fig, ax = plt.subplots()
-        ax.pcolor(img_2D, norm=colors.LogNorm(vmin=1e-5, vmax=0.5))
+        fig1, ax1 = plt.subplots()
+        ax1.pcolor(img_2D, norm=colors.LogNorm(vmin=1e-5, vmax=0.5))
         plt.axis('off') 
         plt.imshow(img_2D)
         plt.savefig(path ,bbox_inches='tight',pad_inches=0)
@@ -55,6 +55,7 @@ class estimate_shadow():
         # reshape data 
         segmented_image = segmented_data.reshape(img.shape)
         
+        fig2, ax2 = plt.subplots()
         plt.imshow(cv2.cvtColor(segmented_image, cv2.COLOR_BGR2RGB)) 
         
         return centers, segmented_image
@@ -72,6 +73,7 @@ class estimate_shadow():
         return factor
     
     def extract_centers(self, centers, segmented_image, factor):
+
         for i in range(len(centers)):
             c = centers[i]
             indices = np.where(np.all(segmented_image == c, axis=-1))
@@ -82,7 +84,6 @@ class estimate_shadow():
             ty = ty * factor     
             
             print("Shadow Guess: (x,y): ", tx, ty)
-
         
 if __name__ == "__main__":
     
@@ -100,6 +101,7 @@ if __name__ == "__main__":
     path = test.save_img()
     
     centers, segmented_image = test.kmeans(path)
-    factor = test.kmeans(path)
+    factor = test.extract_factor(path)
     
     test.extract_centers(centers, segmented_image, factor)
+    
